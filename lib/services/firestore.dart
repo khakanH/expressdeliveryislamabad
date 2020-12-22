@@ -37,4 +37,8 @@ class FirestoreService {
       ).toList(),
     );
   }
+
+  Future<void> addRider(RiderModel riderModel){
+    return _db.collection('riders').add(riderModel.toMap());
+  }
 }

@@ -31,7 +31,19 @@ class RiderModel {
         phone = data['phone'],
         cnic = data['cnic'],
         vehicleRegistrationNumber = data['vehicleRegistrationNumber'],
-        address = data['Address'],
+        address = data['address'],
         timestamp = data['timestamp'].toDate(),
         id = id;
+
+  Map<String, dynamic> toMap(){
+    return {
+      "fullName" : fullName,
+      "email" : email,
+      "phone" : phone,
+      "cnic" : cnic,
+      "vehicleRegistrationNumber" : vehicleRegistrationNumber,
+      "address" : address,
+      "timestamp" : timestamp,
+    };
+  }
 }

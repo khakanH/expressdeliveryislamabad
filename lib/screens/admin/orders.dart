@@ -57,49 +57,52 @@ class _OrdersState extends State<Orders> {
                 ),
               );
             }
-            return Container(
-              padding: EdgeInsets.all(
-                30,
-              ),
-              child: ListView.builder(
-                itemCount: snapshot.data.length,
-                itemBuilder: (context, int) {
-                  OrderModel orderModel = snapshot.data[int];
-                  return ListTile(
-                    leading: order_status
-                        ? Icon(
-                      Icons.done,
-                      color: Color(0xFFFEBC10),
-                    )
-                        : Icon(
-                      Icons.cancel,
-                      color: Color(0xFFFEBC10),
-                    ),
-                    title: Text(
-                      orderModel.customerFullNname,
-                      style: TextStyle(
-                        color: Color(0xFF29146F),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+            if (snapshot.hasData){
+              return Container(
+                padding: EdgeInsets.all(
+                  30,
+                ),
+                child: ListView.builder(
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (context, int) {
+                    OrderModel orderModel = snapshot.data[int];
+                    return ListTile(
+                      leading: order_status
+                          ? Icon(
+                        Icons.done,
+                        color: Color(0xFFFEBC10),
+                      )
+                          : Icon(
+                        Icons.cancel,
+                        color: Color(0xFFFEBC10),
                       ),
-                    ),
-                    subtitle: Text(
-                      'Description: ${orderModel.description}',
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                      title: Text(
+                        orderModel.customerFullNname,
+                        style: TextStyle(
+                          color: Color(0xFF29146F),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
+                      subtitle: Text(
+                        'Description: ${orderModel.description}',
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
 
-                    onTap: () {
-                      Navigator.push(
-                          context, MaterialPageRoute(builder: (context) => OrderDetails(orderModel: orderModel)));
-                    },
-                  );
-                },
-              ),
-            );
+                      onTap: () {
+                        Navigator.push(
+                            context, MaterialPageRoute(builder: (context) => OrderDetails(orderModel: orderModel)));
+                      },
+                    );
+                  },
+                ),
+              );
+            }
+            return Container();
           }),
     );
   }

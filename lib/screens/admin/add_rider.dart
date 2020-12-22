@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:express_delivery/models/rider_model.dart';
+import 'package:express_delivery/services/firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -7,18 +10,40 @@ class AddRider extends StatefulWidget {
 }
 
 class _AddRiderState extends State<AddRider> {
+  GlobalKey<FormState> _key = GlobalKey<FormState>();
+  TextEditingController _name = new TextEditingController();
+  TextEditingController _email = new TextEditingController();
+  TextEditingController _phone = new TextEditingController();
+  TextEditingController _cnic = new TextEditingController();
+  TextEditingController _vehicleRegNum = new TextEditingController();
+  TextEditingController _address = new TextEditingController();
+
+  FocusNode _emailNode = new FocusNode();
+  FocusNode _phoneNode = new FocusNode();
+  FocusNode _cnicNode = new FocusNode();
+  FocusNode _vehicleRegNode = new FocusNode();
+  FocusNode _addressNode = new FocusNode();
 
   Widget _submitButton() {
     return InkWell(
-      // onTap: () {
-      //   if (validate) {
-      //     Navigator.push(
-      //         context,
-      //         MaterialPageRoute(
-      //             builder: (context) =>
-      //                 OtpPage(_controller.text, user_type: _user_type)));
-      //   }
-      // },
+      onTap: () async {
+        if (_key.currentState.validate()) {
+          try {
+            await FirestoreService().addRider(RiderModel(
+              fullName: _name.text,
+              email: _email.text,
+              phone: _phone.text,
+              cnic: _cnic.text,
+              vehicleRegistrationNumber: _vehicleRegNum.text,
+              address: _address.text,
+              timestamp: Timestamp.now().toDate(),
+            ));
+            Navigator.pop(context);
+          } catch (e) {
+            print(e.toString());
+          }
+        }
+      },
       child: Container(
         width: MediaQuery.of(context).size.width * .9,
         padding: EdgeInsets.symmetric(vertical: 15),
@@ -64,162 +89,121 @@ class _AddRiderState extends State<AddRider> {
         elevation: 0,
       ),
       body: Container(
-        padding: EdgeInsets.all(30,),
+        padding: EdgeInsets.all(
+          30,
+        ),
         child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              TextFormField(
-                // controller: _controller,
-                onChanged: (String value) {
-                  if (value.length < 10) {
-                    // validate = false;
-                  }
-                },
-                decoration: InputDecoration(
-                  labelText: 'Full Name',
+          child: Form(
+            key: _key,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextFormField(
+                  textInputAction: TextInputAction.next,
+                  onEditingComplete: (){
+                    FocusScope.of(context).requestFocus(_emailNode);
+                  },
+                  controller: _name,
+                  decoration: InputDecoration(
+                    labelText: 'Full Name',
+                  ),
+                  keyboardType: TextInputType.name,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (String arg) {
+                    if (arg.length < 3)
+                      return 'Enter Valid Name';
+                    else {
+                      return null;
+                    }
+                  },
                 ),
-                keyboardType: TextInputType.name,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (String arg) {
-                  if (arg.length < 10)
-                    return 'Enter Valid Phone Number';
-                  else {
-                    // validate = true;
-                    return null;
-                  }
-                },
-                onSaved: (String val) {
-                  // _name = val;
-                },
-              ),
-              TextFormField(
-                // controller: _controller,
-                onChanged: (String value) {
-                  if (value.length < 10) {
-                    // validate = false;
-                  }
-                },
-                decoration: InputDecoration(
-                  labelText: 'Email',
+                TextFormField(
+                  focusNode: _emailNode,
+                  textInputAction: TextInputAction.next,
+                  onEditingComplete: (){
+                    FocusScope.of(context).requestFocus(_phoneNode);
+                  },
+                  controller: _email,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                 ),
-                keyboardType: TextInputType.emailAddress,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (String arg) {
-                  if (arg.length < 10)
-                    return 'Enter Valid Phone Number';
-                  else {
-                    // validate = true;
-                    return null;
-                  }
-                },
-                onSaved: (String val) {
-                  // _name = val;
-                },
-              ),
-              TextFormField(
-                // controller: _controller,
-                maxLength: 10,
-                onChanged: (String value) {
-                  if (value.length < 10) {
-                    // validate = false;
-                  }
-                },
-                decoration: InputDecoration(
-                  labelText: 'Phone Number',
-                  prefix: Text('+92'),
+                TextFormField(
+                  focusNode: _phoneNode,
+                  textInputAction: TextInputAction.next,
+                  onEditingComplete: (){
+                    FocusScope.of(context).requestFocus(_cnicNode);
+                  },
+                  controller: _phone,
+                  maxLength: 10,
+                  decoration: InputDecoration(
+                    labelText: 'Phone Number',
+                    prefix: Text('+92'),
+                  ),
+                  keyboardType: TextInputType.number,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (String arg) {
+                    if (arg.length < 10)
+                      return 'Enter Valid Phone Number';
+                    else
+                      return null;
+                  },
+                  onSaved: (String val) {
+                    // _name = val;
+                  },
                 ),
-                keyboardType: TextInputType.number,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (String arg) {
-                  if (arg.length < 10)
-                    return 'Enter Valid Phone Number';
-                  else {
-                    // validate = true;
-                    return null;
-                  }
-                },
-                onSaved: (String val) {
-                  // _name = val;
-                },
-              ),
-              TextFormField(
-                // controller: _controller,
-                maxLength: 13,
-                onChanged: (String value) {
-                  if (value.length < 13) {
-                    // validate = false;
-                  }
-                },
-                decoration: InputDecoration(
-                  labelText: 'CNIC',
+                TextFormField(
+                  focusNode: _cnicNode,
+                  textInputAction: TextInputAction.next,
+                  onEditingComplete: (){
+                    FocusScope.of(context).requestFocus(_vehicleRegNode);
+                  },
+                  controller: _cnic,
+                  maxLength: 13,
+                  decoration: InputDecoration(
+                    labelText: 'CNIC',
+                  ),
+                  keyboardType: TextInputType.number,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (String arg) {
+                    if (arg.length < 13)
+                      return 'Enter Valid CNIC';
+                    else
+                      return null;
+                  },
                 ),
-                keyboardType: TextInputType.number,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (String arg) {
-                  if (arg.length < 13)
-                    return 'Enter Valid Phone Number';
-                  else {
-                    // validate = true;
-                    return null;
-                  }
-                },
-                onSaved: (String val) {
-                  // _name = val;
-                },
-              ),
-              TextFormField(
-                // controller: _controller,
-                onChanged: (String value) {
-                  if (value.length < 13) {
-                    // validate = false;
-                  }
-                },
-                decoration: InputDecoration(
-                  labelText: 'Vehicle Registration Number',
+                TextFormField(
+                  focusNode: _vehicleRegNode,
+                  textInputAction: TextInputAction.next,
+                  onEditingComplete: (){
+                    FocusScope.of(context).requestFocus(_addressNode);
+                  },
+                  controller: _vehicleRegNum,
+                  decoration: InputDecoration(
+                    labelText: 'Vehicle Registration Number',
+                  ),
+                  keyboardType: TextInputType.text,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                 ),
-                keyboardType: TextInputType.text,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (String arg) {
-                  if (arg.length < 13)
-                    return 'Enter Valid Phone Number';
-                  else {
-                    // validate = true;
-                    return null;
-                  }
-                },
-                onSaved: (String val) {
-                  // _name = val;
-                },
-              ),
-              TextFormField(
-                // controller: _controller,
-                onChanged: (String value) {
-                  if (value.length < 13) {
-                    // validate = false;
-                  }
-                },
-                decoration: InputDecoration(
-                  labelText: 'Address',
-                  hintMaxLines: 3,
+                TextFormField(
+                  focusNode: _addressNode,
+                  controller: _address,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    labelText: 'Address',
+                    hintMaxLines: 3,
+                  ),
+                  keyboardType: TextInputType.streetAddress,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                 ),
-                keyboardType: TextInputType.streetAddress,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (String arg) {
-                  if (arg.length < 13)
-                    return 'Enter Valid Phone Number';
-                  else {
-                    // validate = true;
-                    return null;
-                  }
-                },
-                onSaved: (String val) {
-                  // _name = val;
-                },
-              ),
-              SizedBox(height: 20,),
-              _submitButton(),
-            ],
+                SizedBox(
+                  height: 20,
+                ),
+                _submitButton(),
+              ],
+            ),
           ),
         ),
       ),

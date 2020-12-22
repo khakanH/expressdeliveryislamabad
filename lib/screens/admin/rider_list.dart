@@ -1,6 +1,3 @@
-import 'dart:html';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:express_delivery/models/rider_model.dart';
 import 'package:express_delivery/screens/rider/rider_details.dart';
 import 'package:express_delivery/services/firestore.dart';
@@ -40,9 +37,8 @@ class _RiderListState extends State<RiderList> {
         elevation: 0,
       ),
       body: StreamBuilder(
-          stream:
-          FirebaseFirestore.instance.collection('riders').snapshots(),
-          builder: (context,snapshot) {
+          stream: FirestoreService().getRiders(),
+          builder: (context, snapshot) {
             if (snapshot.hasError && !snapshot.hasData) {
               print(snapshot.error.toString());
               return Container(
@@ -54,42 +50,50 @@ class _RiderListState extends State<RiderList> {
                 ),
               );
             }
-            return Container(
-              padding: EdgeInsets.all(
-                30,
-              ),
-              child: ListView(
-                children: snapshot.data.documents.map((document){
-                  return ListTile(
-                    leading:  Icon(
-                      Icons.motorcycle,
-                      color: Color(0xFFFEBC10),
-                    ),
-                    title: Text(
-                      riderModel.fullName,
-                      style: TextStyle(
-                        color: Color(0xFF29146F),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+            if (snapshot.hasData) {
+              return Container(
+                padding: EdgeInsets.all(
+                  30,
+                ),
+                child: ListView.builder(
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (context, int) {
+                    RiderModel riderModel = snapshot.data[int];
+                    return ListTile(
+                      leading: Icon(
+                        Icons.motorcycle,
+                        color: Color(0xFFFEBC10),
                       ),
-                    ),
-                    subtitle: Text(
-                      riderModel.phone,
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                      title: Text(
+                        riderModel.fullName,
+                        style: TextStyle(
+                          color: Color(0xFF29146F),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
-
-                    onTap: () {
-                      Navigator.push(
-                          context, MaterialPageRoute(builder: (context) => RiderDetails(riderModel: riderModel,)));
-                    },
-                  );
-                }).toList(),
-              ),
-            );
+                      subtitle: Text(
+                        riderModel.phone,
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => RiderDetails(
+                                      riderModel: riderModel,
+                                    )));
+                      },
+                    );
+                  },
+                ),
+              );
+            }
+            return Container();
           }),
     );
   }
