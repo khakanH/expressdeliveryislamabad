@@ -1,4 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:express_delivery/models/customer_model.dart';
 import 'package:express_delivery/screens/customer/home_user.dart';
+import 'package:express_delivery/services/firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -9,34 +13,31 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  Widget _entryField(String title, {bool isPassword = false}) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            title,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          TextField(
-              decoration: InputDecoration(
-                  border: InputBorder.none,
-                  fillColor: Color(0xfff3f3f4),
-                  filled: true))
-        ],
-      ),
-    );
-  }
+
+  GlobalKey<FormState> _key = GlobalKey<FormState>();
+  TextEditingController _name = new TextEditingController();
+  TextEditingController _email = new TextEditingController();
+  FocusNode _emailNode = new FocusNode();
 
   Widget _submitButton() {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => UserHome()));
+    return InkWell(
+      onTap: () async {
+        if (_key.currentState.validate()) {
+          try {
+            await FirestoreService().addCustomer(CustomerModel(
+              fullName: _name.text,
+              email: _email.text,
+              phone: '${FirebaseAuth.instance.currentUser.phoneNumber}',
+              timestamp: Timestamp.now().toDate(),
+            ), '${FirebaseAuth.instance.currentUser.uid}');
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => UserHome(fullName: _name.text,)),);
+          } catch (e) {
+            print(e.toString());
+          }
+        }
       },
       child: Container(
         width: MediaQuery.of(context).size.width * .9,
@@ -49,7 +50,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 end: Alignment.centerRight,
                 colors: [Color(0xFFFEBC10), Color(0xFFFEBC10)])),
         child: Text(
-          'CONFIRM',
+          'ADD',
           style: TextStyle(fontSize: 24, color: Colors.white),
         ),
       ),
@@ -61,15 +62,6 @@ class _SignUpPageState extends State<SignUpPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            setState(() {
-              Navigator.pop(context);
-            });
-          },
-          icon: Icon(FontAwesomeIcons.longArrowAltLeft),
-          color: Color(0xFF29146F),
-        ),
         title: Text(
           'JUST FEW SECONDS WAY',
           style: GoogleFonts.montserrat(
@@ -95,15 +87,45 @@ class _SignUpPageState extends State<SignUpPage> {
               padding: EdgeInsets.all(
                 30,
               ),
-              child: Column(
-                children: [
-                  Text(
-                    'Please fill in few details below',
-                    style: TextStyle(),
-                  ),
-                  _entryField('Full Name'),
-                  _entryField('Email'),
-                ],
+              child: Form(
+                key: _key,
+                child: Column(
+                  children: [
+                    Text(
+                      'Please fill in few details below',
+                      style: TextStyle(),
+                    ),
+
+                    TextFormField(
+                      textInputAction: TextInputAction.next,
+                      onEditingComplete: (){
+                        FocusScope.of(context).requestFocus(_emailNode);
+                      },
+                      controller: _name,
+                      decoration: InputDecoration(
+                        labelText: 'Full Name',
+                      ),
+                      keyboardType: TextInputType.name,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (String arg) {
+                        if (arg.length < 3)
+                          return 'Enter Valid Name';
+                        else {
+                          return null;
+                        }
+                      },
+                    ),
+                    TextFormField(
+                      focusNode: _emailNode,
+                      controller: _email,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                    ),
+                  ],
+                ),
               ),
             ),
             _submitButton(),

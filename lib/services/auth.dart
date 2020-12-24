@@ -7,8 +7,8 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // create user object based on FirebaseUser
-  Customer _customerFromFirebaseUser(User firebaseUser){
-    return firebaseUser != null ? Customer() : null;
+  CustomerModel _customerFromFirebaseUser(User firebaseUser){
+    return firebaseUser != null ? CustomerModel() : null;
   }
 
   Stream<User> get user{

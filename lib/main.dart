@@ -1,4 +1,5 @@
 import 'package:express_delivery/screens/admin/home_admin.dart';
+import 'package:express_delivery/screens/customer/home_user.dart';
 import 'package:express_delivery/screens/loading.dart';
 import 'package:express_delivery/wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.deepPurple,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: AdminHome(),
+      home: UserHome(),
     );
   }
 }

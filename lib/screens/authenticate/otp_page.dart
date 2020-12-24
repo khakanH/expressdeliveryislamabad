@@ -1,16 +1,13 @@
-
-import 'package:express_delivery/screens/customer/home_user.dart';
 import 'package:express_delivery/screens/loading.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pinput/pin_put/pin_put.dart';
 
 class OtpPage extends StatefulWidget {
   final String phone;
-  final String user_type;
-  OtpPage(this.phone, {this.user_type });
+
+  OtpPage(this.phone,);
 
   @override
   _OtpPageState createState() => _OtpPageState();
@@ -28,8 +25,6 @@ class _OtpPageState extends State<OtpPage> {
       borderRadius: BorderRadius.circular(15.0),
     );
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -111,10 +106,14 @@ class _OtpPageState extends State<OtpPage> {
                         .then((value) async {
                       if (value.user != null) {
                         print('user logged in');
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(builder: (context) => UserHome()),
-                            (route) => false);
+                        // Navigator.pushAndRemoveUntil(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: (context) => Loading(
+                        //               user_id: value.user.uid,
+                        //               phone_number: '${widget.phone}',
+                        //             )),
+                        //     (route) => false);
                       }
                     });
                   } catch (e) {
@@ -150,13 +149,16 @@ class _OtpPageState extends State<OtpPage> {
             .then((value) async {
           if (value.user != null) {
             print('user logged in');
-            // value.user.uid
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => Loading(user_id: value.user.uid,)),
-                (route) => false);
+            // value.user.phoneNumber
+            // Navigator.pushAndRemoveUntil(
+            //     context,
+            //     MaterialPageRoute(
+            //         builder: (context) => Loading(
+            //               user_id: value.user.uid,
+            //               phone_number: value.user.phoneNumber,
+            //             )),
+            //     (route) => false);
           }
-
         });
       },
       verificationFailed: (FirebaseAuthException e) {

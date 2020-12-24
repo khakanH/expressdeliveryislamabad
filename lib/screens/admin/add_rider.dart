@@ -32,7 +32,7 @@ class _AddRiderState extends State<AddRider> {
             await FirestoreService().addRider(RiderModel(
               fullName: _name.text,
               email: _email.text,
-              phone: _phone.text,
+              phone: '+92${_phone.text}',
               cnic: _cnic.text,
               vehicleRegistrationNumber: _vehicleRegNum.text,
               address: _address.text,

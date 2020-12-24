@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "270174303353",
-    "project_id": "united-yeti-298910",
-    "storage_bucket": "united-yeti-298910.appspot.com"
+    "project_number": "1017359292315",
+    "project_id": "express-delivery-85f8b",
+    "storage_bucket": "express-delivery-85f8b.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:270174303353:android:62f2b7c56b067645b950a8",
+        "mobilesdk_app_id": "1:1017359292315:android:e62bd98caf047d5c26333e",
         "android_client_info": {
           "package_name": "com.vconekt.express_delivery"
         }
       },
       "oauth_client": [
         {
-          "client_id": "270174303353-dcqcgt65i3t4h2c10lki8lf1jf9bttmb.apps.googleusercontent.com",
+          "client_id": "1017359292315-hm8lfe590snpbp328k5vs3s417i6floq.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCFbhsfLI0x6_wxIp62kjFUYZeRHaqrXNM"
+          "current_key": "AIzaSyCWLPUCHfETgcfYVafCSjuRAxBhfeBU7fs"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "270174303353-dcqcgt65i3t4h2c10lki8lf1jf9bttmb.apps.googleusercontent.com",
+              "client_id": "1017359292315-hm8lfe590snpbp328k5vs3s417i6floq.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

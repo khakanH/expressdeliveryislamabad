@@ -62,6 +62,7 @@ class RiderDetails extends StatelessWidget {
                 initialValue: riderModel.phone,
                 decoration: InputDecoration(
                   labelText: 'Phone Number',
+                  prefix: Text('+92'),
                 ),
                 keyboardType: TextInputType.number,
               ),

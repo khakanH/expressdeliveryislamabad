@@ -49,7 +49,7 @@ class OrderDetails extends StatelessWidget {
                 keyboardType: TextInputType.name,
               ),
               TextFormField(
-                // initialValue: '',
+                initialValue: orderModel.customerPhoneNum,
                 enabled: false,
                 decoration: InputDecoration(
                   labelText: 'Phone Number',
@@ -70,7 +70,7 @@ class OrderDetails extends StatelessWidget {
                 keyboardType: TextInputType.name,
               ),
               TextFormField(
-                // initialValue: '',
+                initialValue: orderModel.riderPhoneNum,
                 enabled: false,
                 decoration: InputDecoration(
                   labelText: 'Rider Phone Number',

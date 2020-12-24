@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:express_delivery/models/customer_model.dart';
 import 'package:express_delivery/models/order_model.dart';
 import 'package:express_delivery/models/rider_model.dart';
 import 'package:flutter/cupertino.dart';
@@ -40,5 +41,13 @@ class FirestoreService {
 
   Future<void> addRider(RiderModel riderModel){
     return _db.collection('riders').add(riderModel.toMap());
+  }
+  
+  Future<void> updateOrder(OrderModel orderModel, String id){
+    return _db.collection('orders').doc(id).update(orderModel.toMap());
+  }
+
+  Future<void> addCustomer(CustomerModel customerModel, String id){
+    return _db.collection('customers').doc(id).set(customerModel.toMap());
   }
 }

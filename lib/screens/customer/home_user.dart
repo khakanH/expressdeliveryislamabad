@@ -1,11 +1,15 @@
-import 'dart:async';
 import 'package:express_delivery/drawer/user_drawer.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart' as geolocator;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_place_picker/google_maps_place_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class UserHome extends StatefulWidget {
+  final String fullName;
+
+  const UserHome({Key key, this.fullName}) : super(key: key);
+
   @override
   _UserHomeState createState() => _UserHomeState();
 }
@@ -35,22 +39,95 @@ class _UserHomeState extends State<UserHome> {
 
   @override
   Widget build(BuildContext context) {
+    List<DropdownMenuItem> cities = [];
+    cities.add(DropdownMenuItem(
+      child: Text('Islamabad'),
+      value: 'isb',
+    ));
+    cities.add(DropdownMenuItem(
+      child: Text('Rawalpindi'),
+      value: 'rwl',
+    ));
     return Scaffold(
-      endDrawer: UserDrawer(),
+      endDrawer: UserDrawer(
+        fullName: '${widget.fullName}',
+      ),
       body: Stack(
         children: <Widget>[
           CustomGoogleMap(),
-          DraggableScrollableSheet(
-            initialChildSize: 0.30,
-            minChildSize: 0.15,
-            maxChildSize: 0.5,
-            builder: (BuildContext context, ScrollController scrollController) {
-              return SingleChildScrollView(
-                controller: scrollController,
-                child: CustomScrollViewContent(),
-              );
-            },
+          Positioned(
+            height: MediaQuery.of(context).size.width * .6,
+            bottom: 15,
+            right: 15,
+            left: 15,
+            child: Card(
+              child: Container(
+                padding: EdgeInsets.all(
+                  20,
+                ),
+                child: Column(
+                  children: [
+                    DropdownButton(
+                        items: cities,
+                        isExpanded: true,
+                        hint: Text('Drop Location'),
+                        onChanged: null),
+                    TextFormField(
+                      enabled: false,
+                      decoration: InputDecoration(
+                        labelText: 'Selected Rider',
+                      ),
+                      keyboardType: TextInputType.name,
+                      validator: (String arg) {
+                        if (arg.isEmpty)
+                          return 'Delivery Charges';
+                        else {
+                          return null;
+                        }
+                      },
+                    ),
+                    RaisedButton(
+                      child: Text('click'),
+                      onPressed: (){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PlacePicker(
+                              apiKey: 'AIzaSyCN-2fyocInwIfJ5EZhLgiWpA9cOY2sWV8',   // Put YOUR OWN KEY here.
+                              onPlacePicked: (result) {
+                                print('place picker');
+                                print(result.formattedAddress);
+                                print(result.geometry.location);
+                                print(result.adrAddress);
+                                print(result.addressComponents.length);
+                                print(result.addressComponents.asMap());
+                                Navigator.of(context).pop();
+                              },
+                              usePinPointingSearch: true,
+                              desiredLocationAccuracy: geolocator.LocationAccuracy.high,
+                              initialPosition: LatLng(37.42796133580664, -122.085749655962),
+                              useCurrentLocation: true,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
+          // DraggableScrollableSheet(
+          //   initialChildSize: 0.30,
+          //   minChildSize: 0.15,
+          //   maxChildSize: 0.5,
+          //   builder: (BuildContext context, ScrollController scrollController) {
+          //     return SingleChildScrollView(
+          //       controller: scrollController,
+          //       child: CustomScrollViewContent(),
+          //     );
+          //   },
+          // ),
         ],
       ),
     );
@@ -65,11 +142,10 @@ class _UserHomeState extends State<UserHome> {
     if (await Permission.location.isGranted) {
       _permissionStatus = PermissionStatus.granted;
       print('permission-granted');
-    }else{
+    } else {
       print('else-part');
       openAppSettings();
     }
-
   }
 
   // Google Map in the background
@@ -79,6 +155,7 @@ class _UserHomeState extends State<UserHome> {
       color: Colors.blue[50],
       child: GoogleMap(
         mapType: MapType.normal,
+        zoomControlsEnabled: false,
         initialCameraPosition: _kGooglePlex,
         onMapCreated: (GoogleMapController controller) {
           _googleMapController = controller;

@@ -15,9 +15,12 @@ class _WrapperState extends State<Wrapper> {
     return StreamBuilder<User>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
+
+          print('snapshot');
+          print(snapshot);
           if (snapshot.hasData && snapshot != null) {
             // snapshot.data.uid
-            return Loading(user_id: snapshot.data.uid,);
+            return Loading();
           }
           return GetInPage();
         });

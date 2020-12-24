@@ -10,7 +10,6 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   TextEditingController _controller = new TextEditingController();
-  String _user_type = "customer";
   bool validate = false;
 
   Widget _entryField(String title) {
@@ -44,11 +43,11 @@ class _SignInPageState extends State<SignInPage> {
     return InkWell(
       onTap: () {
         if (validate) {
-          Navigator.push(
+          Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      OtpPage(_controller.text, user_type: _user_type)));
+                      OtpPage(_controller.text,)));
         }
       },
       child: Container(
@@ -135,32 +134,6 @@ class _SignInPageState extends State<SignInPage> {
                     onSaved: (String val) {
                       // _name = val;
                     },
-                  ),
-                  ListTile(
-                    title: Text('Customer'),
-                    visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                    leading: Radio(
-                      value: 'customer',
-                      groupValue: _user_type,
-                      onChanged: (String value) {
-                        setState(() {
-                          _user_type = value;
-                        });
-                      },
-                    ),
-                  ),
-                  ListTile(
-                    title: Text('Rider'),
-                    visualDensity: VisualDensity(horizontal: 0, vertical: -4),
-                    leading: Radio(
-                      value: 'rider',
-                      groupValue: _user_type,
-                      onChanged: (String value) {
-                        setState(() {
-                          _user_type = value;
-                        });
-                      },
-                    ),
                   ),
                 ],
               ),

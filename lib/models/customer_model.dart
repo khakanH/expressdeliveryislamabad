@@ -1,7 +1,26 @@
-class Customer {
-  final String full_name;
+class CustomerModel {
+  final String fullName;
   final String email;
+  final String phone;
   final String id;
+  final DateTime timestamp;
 
-  Customer({this.email, this.full_name, this.id});
+  CustomerModel(
+      {this.fullName, this.email, this.phone, this.id, this.timestamp});
+
+  CustomerModel.fromMap(Map<String, dynamic> data, String id)
+      : fullName = data['fullName'],
+        email = data['email'],
+        phone = data['phone'],
+        timestamp = data['timestamp'].toDate(),
+        id = id;
+
+  Map<String, dynamic> toMap() {
+    return {
+      "fullName": fullName,
+      "email": email,
+      "phone": phone,
+      "timestamp": timestamp,
+    };
+  }
 }

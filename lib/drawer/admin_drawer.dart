@@ -1,12 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:express_delivery/screens/admin/order_details.dart';
 import 'package:express_delivery/screens/admin/orders.dart';
 import 'package:express_delivery/screens/admin/add_rider.dart';
 import 'package:express_delivery/screens/admin/rider_list.dart';
+import 'package:express_delivery/screens/get_in_page.dart';
 import 'package:express_delivery/services/auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AdminDrawer extends StatelessWidget {
   final AuthService _auth = AuthService();
+  final String fullName;
+
+  AdminDrawer({Key key, this.fullName}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -31,7 +37,7 @@ class AdminDrawer extends StatelessWidget {
                 SizedBox(width: 10,),
                 Expanded(
                   child: Text(
-                    'USER FULL NAME',
+                    fullName != null ? fullName : 'USER FULL NAME',
                     style: TextStyle(
                       color: Color(0xFF29146F),
                       fontWeight: FontWeight.bold,
@@ -48,25 +54,6 @@ class AdminDrawer extends StatelessWidget {
             ),
             child: Column(
               children: [
-                ListTile(
-                  leading: Icon(
-                    Icons.label_important,
-                    color: Color(0xFFFEBC10),
-                  ),
-                  title: Text(
-                    'PROFILE',
-                    style: TextStyle(
-                      color: Color(0xFF29146F),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.pop(context);
-                    // Navigator.push(
-                    //     context, MaterialPageRoute(builder: (context) => OrderDetails(order_id: '12345')));
-                  },
-                ),
                 ListTile(
                   leading: Icon(
                     Icons.list,
@@ -158,16 +145,17 @@ class AdminDrawer extends StatelessWidget {
                   ),
                   onTap: () async {
                     await _auth.signOut();
-                    // Navigator.pop(context);
-                    // Navigator.push(
-                    //     context, MaterialPageRoute(builder: (context) => LoginPage()));
+                    Navigator.pop(context);
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (context) => GetInPage()));
                   },
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
   }
+
 }
