@@ -36,6 +36,7 @@ class _AddRiderState extends State<AddRider> {
               cnic: _cnic.text,
               vehicleRegistrationNumber: _vehicleRegNum.text,
               address: _address.text,
+              authID: '',
               timestamp: Timestamp.now().toDate(),
             ));
             Navigator.pop(context);

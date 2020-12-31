@@ -43,7 +43,7 @@ class _SignInPageState extends State<SignInPage> {
     return InkWell(
       onTap: () {
         if (validate) {
-          Navigator.pushReplacement(
+          Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) =>

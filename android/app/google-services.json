@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1017359292315-stbsrfc0up841ockp46465nj5j3jgpou.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vconekt.express_delivery",
+            "certificate_hash": "68487823096ab999e18dfcac60564f36e2602cbb"
+          }
+        },
+        {
           "client_id": "1017359292315-hm8lfe590snpbp328k5vs3s417i6floq.apps.googleusercontent.com",
           "client_type": 3
         }

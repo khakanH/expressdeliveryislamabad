@@ -174,6 +174,7 @@ class _OtpPageState extends State<OtpPage> {
           _verification_code = verificationID;
         });
       },
+      timeout: Duration(seconds: 120),
     );
   }
 

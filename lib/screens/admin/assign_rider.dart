@@ -24,27 +24,29 @@ class _AssignRiderState extends State<AssignRider> {
   Widget _submitButton() {
     return InkWell(
       onTap: () async {
-
         print('order id: ${widget.orderModel.id}');
 
         if (_key.currentState.validate()) {
           try {
-            await FirestoreService().updateOrder(OrderModel(
-              customerID: widget.orderModel.id,
-              customerFullNname: widget.orderModel.customerFullNname,
-              customerPhoneNum: widget.orderModel.customerPhoneNum,
-              riderID: rider_id,
-              riderFullName: _riderNameControl.text,
-              riderPhoneNum: _riderPhoneControl.text,
-              dropLocation: widget.orderModel.customerPhoneNum,
-              deliveryCharges: widget.orderModel.deliveryCharges,
-              pickUpAddress: widget.orderModel.pickUpAddress,
-              dropAddress: widget.orderModel.dropAddress,
-              description: widget.orderModel.description,
-              status: 'assigned',
-              timestamp: widget.orderModel.timestamp,
-              // timestamp: Timestamp.now().toDate(),
-            ), widget.orderModel.id);
+            await FirestoreService().updateOrder(
+                OrderModel(
+                  customerID: widget.orderModel.id,
+                  customerFullNname: widget.orderModel.customerFullNname,
+                  customerPhoneNum: widget.orderModel.customerPhoneNum,
+                  riderID: rider_id,
+                  riderFullName: _riderNameControl.text,
+                  riderPhoneNum: _riderPhoneControl.text,
+                  deliveryCharges: widget.orderModel.deliveryCharges,
+                  pickUpAddress: widget.orderModel.pickUpAddress,
+                  dropAddress: widget.orderModel.dropAddress,
+                  pickUpGeoPoint: widget.orderModel.pickUpGeoPoint,
+                  droppGeoPoint: widget.orderModel.droppGeoPoint,
+                  description: widget.orderModel.description,
+                  status: 'assigned',
+                  timestamp: widget.orderModel.timestamp,
+                  // timestamp: Timestamp.now().toDate(),
+                ),
+                widget.orderModel.id);
             Navigator.pop(context);
           } catch (e) {
             print(e.toString());
@@ -128,6 +130,7 @@ class _AssignRiderState extends State<AssignRider> {
                 StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
                         .collection("riders")
+                        .where('authID', isNotEqualTo: '')
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasError && !snapshot.hasData) {
@@ -145,7 +148,7 @@ class _AssignRiderState extends State<AssignRider> {
                           riders.add(
                             DropdownMenuItem(
                               child: Text(
-                                snap.id,
+                                snap.get('fullName'),
                                 style: TextStyle(color: Color(0xff11b719)),
                               ),
                               value: snap,
@@ -155,13 +158,13 @@ class _AssignRiderState extends State<AssignRider> {
                         return Container(
                           child: DropdownButton(
                             items: riders,
+                            isExpanded: true,
                             onChanged: (snap) {
-                              rider_id = snap.id;
+                              rider_id = snap.get('authID');
                               print(rider_id);
                               _riderNameControl.text = snap.get('fullName');
                               _riderPhoneControl.text = snap.get('phone');
                             },
-                            isExpanded: false,
                             hint: new Text(
                               "Choose Rider",
                               style: TextStyle(color: Color(0xff11b719)),
@@ -204,15 +207,6 @@ class _AssignRiderState extends State<AssignRider> {
                 ),
                 SizedBox(
                   height: 20,
-                ),
-                // drop location
-                TextFormField(
-                  initialValue: widget.orderModel.dropLocation,
-                  enabled: false,
-                  decoration: InputDecoration(
-                    labelText: 'Drop City',
-                  ),
-                  keyboardType: TextInputType.name,
                 ),
                 TextFormField(
                   initialValue: '${widget.orderModel.deliveryCharges} PKR',

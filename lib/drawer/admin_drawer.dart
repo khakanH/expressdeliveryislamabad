@@ -3,6 +3,7 @@ import 'package:express_delivery/screens/admin/order_details.dart';
 import 'package:express_delivery/screens/admin/orders.dart';
 import 'package:express_delivery/screens/admin/add_rider.dart';
 import 'package:express_delivery/screens/admin/rider_list.dart';
+import 'package:express_delivery/screens/admin/working_time.dart';
 import 'package:express_delivery/screens/get_in_page.dart';
 import 'package:express_delivery/services/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -54,6 +55,25 @@ class AdminDrawer extends StatelessWidget {
             ),
             child: Column(
               children: [
+                ListTile(
+                  leading: Icon(
+                    Icons.lock_clock,
+                  ),
+                  title: Text(
+                    'SERVICE TIMING',
+                    style: TextStyle(
+                      color: Color(0xFF29146F),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // _checkIfAnyActiveOrder(context);
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (context) => WorkingTime()));
+                  },
+                ),
                 ListTile(
                   leading: Icon(
                     Icons.list,
@@ -146,7 +166,7 @@ class AdminDrawer extends StatelessWidget {
                   onTap: () async {
                     await _auth.signOut();
                     Navigator.pop(context);
-                    Navigator.push(
+                    Navigator.pushReplacement(
                         context, MaterialPageRoute(builder: (context) => GetInPage()));
                   },
                 ),

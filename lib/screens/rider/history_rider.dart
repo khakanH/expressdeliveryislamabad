@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
-class UserHistory extends StatefulWidget {
+class RiderHistory extends StatefulWidget {
   @override
-  _UserHistoryState createState() => _UserHistoryState();
+  _RiderHistoryState createState() => _RiderHistoryState();
 }
 
-class _UserHistoryState extends State<UserHistory> {
+class _RiderHistoryState extends State<RiderHistory> {
   Widget _historyItem(
       {DateTime time, String price, String point, String point_des}) {
     return Column(
@@ -29,7 +29,7 @@ class _UserHistoryState extends State<UserHistory> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-              '${DateFormat('EEEE, d MMM, yyyy').format(time)}',
+                '${DateFormat('EEEE, d MMM, yyyy').format(time)}',
                 style: TextStyle(
                   color: Colors.black54,
                   fontWeight: FontWeight.bold,
@@ -98,69 +98,69 @@ class _UserHistoryState extends State<UserHistory> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          leading: IconButton(
-            onPressed: () {
-              setState(() {
-                Navigator.pop(context);
-              });
-            },
-            icon: Icon(Icons.arrow_back),
-            color: Color(0xFF29146F),
-          ),
-          title: Text(
-            'HISTORY',
-            style: GoogleFonts.montserrat(
-              textStyle: TextStyle(
-                color: Color(0xFF29146F),
-                fontWeight: FontWeight.bold,
-                fontSize: 24.0,
-              ),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            setState(() {
+              Navigator.pop(context);
+            });
+          },
+          icon: Icon(Icons.arrow_back),
+          color: Color(0xFF29146F),
+        ),
+        title: Text(
+          'HISTORY',
+          style: GoogleFonts.montserrat(
+            textStyle: TextStyle(
+              color: Color(0xFF29146F),
+              fontWeight: FontWeight.bold,
+              fontSize: 24.0,
             ),
           ),
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          elevation: 0,
         ),
-        body: StreamBuilder(
-            stream: FirebaseFirestore.instance
-                .collection('orders')
-                .orderBy('timestamp', descending: true)
-                .where('customerID',
-                isEqualTo: '${FirebaseAuth.instance.currentUser.uid}')
-                .snapshots(),
-            builder: (context, querySnapshot) {
-              if (querySnapshot.hasError && !querySnapshot.hasData) {
-                return Container(
-                  padding: EdgeInsets.all(30,),
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              }
-              if (querySnapshot.hasData){
-                print('${querySnapshot.data.docs.length}');
-                return Container(
-                  padding: EdgeInsets.all(30,),
-                  child: ListView.builder(
-                      itemCount: querySnapshot.data.docs.length,
-                      itemBuilder: (context, index){
-                        QueryDocumentSnapshot queryDocumentSnapshot = querySnapshot.data.docs[index];
-                        OrderModel orderModel = new OrderModel(
-                          pickUpAddress: queryDocumentSnapshot.get('pickUpAddress'),
-                          dropAddress: queryDocumentSnapshot.get('dropAddress'),
-                          deliveryCharges: queryDocumentSnapshot.get('deliveryCharges'),
-                          timestamp: queryDocumentSnapshot.get('timestamp').toDate(),
-
-                        );
-                        return _historyItem(point: orderModel.pickUpAddress, point_des: orderModel.dropAddress, time: orderModel.timestamp, price: orderModel.deliveryCharges.toString());
-                      }),
-                );
-              }
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection('orders')
+              .orderBy('timestamp', descending: true)
+              .where('riderID',
+              isEqualTo: '${FirebaseAuth.instance.currentUser.uid}')
+              .snapshots(),
+          builder: (context, querySnapshot) {
+            if (querySnapshot.hasError && !querySnapshot.hasData) {
               return Container(
-                padding: EdgeInsets.all(30,),);
-            }),
+                padding: EdgeInsets.all(30,),
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+            if (querySnapshot.hasData){
+              print('${querySnapshot.data.docs.length}');
+              return Container(
+                padding: EdgeInsets.all(30,),
+                child: ListView.builder(
+                    itemCount: querySnapshot.data.docs.length,
+                    itemBuilder: (context, index){
+                      QueryDocumentSnapshot queryDocumentSnapshot = querySnapshot.data.docs[index];
+                      OrderModel orderModel = new OrderModel(
+                        pickUpAddress: queryDocumentSnapshot.get('pickUpAddress'),
+                        dropAddress: queryDocumentSnapshot.get('dropAddress'),
+                        deliveryCharges: queryDocumentSnapshot.get('deliveryCharges'),
+                        timestamp: queryDocumentSnapshot.get('timestamp').toDate(),
+
+                      );
+                      return _historyItem(point: orderModel.pickUpAddress, point_des: orderModel.dropAddress, time: orderModel.timestamp, price: orderModel.deliveryCharges.toString());
+                    }),
+              );
+            }
+            return Container(
+              padding: EdgeInsets.all(30,),);
+          }),
     );
   }
 }

@@ -53,7 +53,6 @@ class OrderDetails extends StatelessWidget {
                 enabled: false,
                 decoration: InputDecoration(
                   labelText: 'Phone Number',
-                  prefix: Text('+92'),
                 ),
                 keyboardType: TextInputType.number,
               ),
@@ -80,15 +79,6 @@ class OrderDetails extends StatelessWidget {
               ),
               SizedBox(
                 height: 20,
-              ),
-              // drop location
-              TextFormField(
-                initialValue: orderModel.dropLocation,
-                enabled: false,
-                decoration: InputDecoration(
-                  labelText: 'Drop City',
-                ),
-                keyboardType: TextInputType.name,
               ),
               TextFormField(
                 initialValue: '${orderModel.deliveryCharges} PKR',

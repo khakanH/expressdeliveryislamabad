@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class OrderModel {
   final String id;
 
@@ -7,7 +9,6 @@ class OrderModel {
   final String riderID;
   final String riderFullName;
   final String riderPhoneNum;
-  final String dropLocation;
   final int deliveryCharges;
   final String pickUpAddress;
   final String dropAddress;
@@ -18,6 +19,8 @@ class OrderModel {
   // TODO you can add rider assigned at
 
   // TODO pick and drop coordinates
+  GeoPoint pickUpGeoPoint;
+  GeoPoint droppGeoPoint;
 
   OrderModel(
       {this.id,
@@ -27,10 +30,11 @@ class OrderModel {
       this.riderID,
       this.riderFullName,
       this.riderPhoneNum,
-      this.dropLocation,
       this.deliveryCharges,
       this.pickUpAddress,
       this.dropAddress,
+      this.pickUpGeoPoint,
+      this.droppGeoPoint,
       this.description,
       this.status,
       this.timestamp});
@@ -42,10 +46,11 @@ class OrderModel {
         riderID = data['riderID'],
         riderFullName = data['riderFullName'],
         riderPhoneNum = data['riderPhoneNum'],
-        dropLocation = data['dropLocation'],
         deliveryCharges = data['deliveryCharges'],
         pickUpAddress = data['pickUpAddress'],
         dropAddress = data['dropAddress'],
+        pickUpGeoPoint = data['pickUpGeoPoint'],
+        droppGeoPoint = data['droppGeoPoint'],
         description = data['description'],
         status = data['status'],
         timestamp = data['timestamp'].toDate(),
@@ -53,19 +58,20 @@ class OrderModel {
 
   Map<String, dynamic> toMap() {
     return {
-      "customerID" : customerID,
-      "customerFullNname" : customerFullNname,
-      "customerPhoneNum" : customerPhoneNum,
-      "riderID" : riderID,
-      "riderFullName" : riderFullName,
-      "riderPhoneNum" : riderPhoneNum,
-      "dropLocation" : dropLocation,
-      "deliveryCharges" : deliveryCharges,
-      "pickUpAddress" : pickUpAddress,
-      "dropAddress" : dropAddress,
-      "description" : description,
-      "status" : status,
-      "timestamp" : timestamp,
+      "customerID": customerID,
+      "customerFullNname": customerFullNname,
+      "customerPhoneNum": customerPhoneNum,
+      "riderID": riderID,
+      "riderFullName": riderFullName,
+      "riderPhoneNum": riderPhoneNum,
+      "deliveryCharges": deliveryCharges,
+      "pickUpAddress": pickUpAddress,
+      "dropAddress": dropAddress,
+      "pickUpGeoPoint": pickUpGeoPoint,
+      "droppGeoPoint": droppGeoPoint,
+      "description": description,
+      "status": status,
+      "timestamp": timestamp,
     };
   }
 }

@@ -11,9 +11,9 @@ class RiderModel {
   final String vehicleRegistrationNumber;
   final String address;
 
-  final DateTime timestamp;
+  final String authID;
 
-  // TODO coordinates
+  final DateTime timestamp;
 
   RiderModel(
       {this.id,
@@ -23,27 +23,30 @@ class RiderModel {
       this.cnic,
       this.vehicleRegistrationNumber,
       this.address,
+      this.authID,
       this.timestamp});
 
-  RiderModel.fromMap(Map<String, dynamic> data, String id) :
-        fullName = data['fullName'],
+  RiderModel.fromMap(Map<String, dynamic> data, String id)
+      : fullName = data['fullName'],
         email = data['email'],
         phone = data['phone'],
         cnic = data['cnic'],
         vehicleRegistrationNumber = data['vehicleRegistrationNumber'],
         address = data['address'],
+        authID = data['authID'],
         timestamp = data['timestamp'].toDate(),
         id = id;
 
-  Map<String, dynamic> toMap(){
+  Map<String, dynamic> toMap() {
     return {
-      "fullName" : fullName,
-      "email" : email,
-      "phone" : phone,
-      "cnic" : cnic,
-      "vehicleRegistrationNumber" : vehicleRegistrationNumber,
-      "address" : address,
-      "timestamp" : timestamp,
+      "fullName": fullName,
+      "email": email,
+      "phone": phone,
+      "cnic": cnic,
+      "vehicleRegistrationNumber": vehicleRegistrationNumber,
+      "address": address,
+      "authID": authID,
+      "timestamp": timestamp,
     };
   }
 }
