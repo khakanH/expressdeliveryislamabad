@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:express_delivery/drawer/rider_drawer.dart';
 import 'package:express_delivery/models/order_model.dart';
+import 'package:express_delivery/models/rider_model.dart';
 import 'package:express_delivery/models/riders_loc_model.dart';
 import 'package:express_delivery/services/firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,15 +15,14 @@ class RiderHome extends StatefulWidget {
 
   const RiderHome({Key key, this.fullname}) : super(key: key);
 
-
   @override
   _RiderHomeState createState() => _RiderHomeState();
 }
 
 class _RiderHomeState extends State<RiderHome> {
   Set<Marker> _markers = {};
-  // BitmapDescriptor pickUpMarker;
-  // BitmapDescriptor dropMarker;
+  BitmapDescriptor pickUpMarker;
+  BitmapDescriptor dropMarker;
 
   GoogleMapController _googleMapController;
 
@@ -37,7 +37,7 @@ class _RiderHomeState extends State<RiderHome> {
     zoom: 15,
   );
 
-  bool isStartButtonPressed = false;
+  static bool isStartButtonPressed = false;
   bool isCompleteButtonPressed = false;
 
   bool isRiderLocationDocExists = false;
@@ -48,18 +48,19 @@ class _RiderHomeState extends State<RiderHome> {
   LocationData _locationData;
 
   void setMarkers() async {
-    // pickUpMarker = await BitmapDescriptor.fromAssetImage(
-    //     ImageConfiguration(), 'assets/pick.png');
-    // dropMarker = await BitmapDescriptor.fromAssetImage(
-    //     ImageConfiguration(), 'assets/drop.png');
+    pickUpMarker = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(), 'assets/pick.png');
+    dropMarker = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(), 'assets/drop.png');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: RiderDrawer(fullName: widget.fullname,),
+      drawer: RiderDrawer(
+        fullName: widget.fullname,
+      ),
       appBar: AppBar(
-
         title: Text(
           'Rider Home',
           style: GoogleFonts.montserrat(
@@ -139,11 +140,9 @@ class _RiderHomeState extends State<RiderHome> {
                                       endIndent: 20,
                                     ),
                                     ListTile(
-                                      leading: Icon(
-                                        Icons.circle,
-                                        size: 10,
-                                        color: Color(0xFF29146F),
-                                      ),
+                                      leading: Image.asset('assets/pick.png',
+                                        width: 24,
+                                        height: 24,),
                                       visualDensity: VisualDensity(
                                           horizontal: 0, vertical: -4),
                                       title: Align(
@@ -164,11 +163,9 @@ class _RiderHomeState extends State<RiderHome> {
                                       ),
                                     ),
                                     ListTile(
-                                      leading: Icon(
-                                        Icons.circle,
-                                        size: 10,
-                                        color: Color(0xFFFEBC10),
-                                      ),
+                                      leading: Image.asset('assets/drop.png',
+                                      width: 24,
+                                      height: 24,),
                                       visualDensity: VisualDensity(
                                           horizontal: 0, vertical: -4),
                                       title: Align(
@@ -253,15 +250,17 @@ class _RiderHomeState extends State<RiderHome> {
                                         onPressed: isStartButtonPressed
                                             ? () {
                                                 // TODO change the order status to complete
-
                                                 setState(() {
-                                                  isCompleteButtonPressed = true;
+                                                  isCompleteButtonPressed =
+                                                      true;
+                                                  updateRiderStatus('free');
                                                   completeOrder(snapshot);
                                                 });
                                               }
                                             : () {
                                                 setState(() {
                                                   isStartButtonPressed = true;
+                                                  updateRiderStatus('busy');
                                                   broadcastRider(snapshot);
                                                 });
                                               },
@@ -283,7 +282,7 @@ class _RiderHomeState extends State<RiderHome> {
                 }
               }
 
-              return Text("loading");
+              return Container();
             },
           ),
         ],
@@ -341,7 +340,6 @@ class _RiderHomeState extends State<RiderHome> {
         // Use current location
         moveCamera(currentLocation, snapshot);
       });
-
     }
   }
 
@@ -364,7 +362,6 @@ class _RiderHomeState extends State<RiderHome> {
   void updateRiderLocationOnFirestore(
       LocationData locationData, AsyncSnapshot<QuerySnapshot> snapshot) async {
     try {
-
       GeoPoint geoPoint =
           new GeoPoint(locationData.latitude, locationData.longitude);
       await FirestoreService().updateRiderLocation(
@@ -373,7 +370,6 @@ class _RiderHomeState extends State<RiderHome> {
             riderDocID: snapshot.data.docs.first.get('riderID'),
           ),
           FirebaseAuth.instance.currentUser.uid);
-
     } catch (e) {
       print(e.toString());
     }
@@ -384,22 +380,25 @@ class _RiderHomeState extends State<RiderHome> {
     print('inside completeOrder');
     print('------------------------------------');
     try {
-      await FirestoreService().updateOrder(OrderModel(
-        customerID: snapshot.data.docs.first.get('customerID'),
-        customerFullNname: snapshot.data.docs.first.get('customerFullNname'),
-        customerPhoneNum: snapshot.data.docs.first.get('customerPhoneNum'),
-        riderID: snapshot.data.docs.first.get('riderID'),
-        riderFullName: snapshot.data.docs.first.get('riderFullName'),
-        riderPhoneNum: snapshot.data.docs.first.get('riderPhoneNum'),
-        deliveryCharges: snapshot.data.docs.first.get('deliveryCharges'),
-        pickUpAddress: snapshot.data.docs.first.get('pickUpAddress'),
-        dropAddress: snapshot.data.docs.first.get('dropAddress'),
-        pickUpGeoPoint: snapshot.data.docs.first.get('pickUpGeoPoint'),
-        droppGeoPoint: snapshot.data.docs.first.get('droppGeoPoint'),
-        description: snapshot.data.docs.first.get('description'),
-        status: 'complete',
-        timestamp: snapshot.data.docs.first.get('timestamp').toDate(),
-      ), snapshot.data.docs.first.id);
+      await FirestoreService().updateOrder(
+          OrderModel(
+            customerID: snapshot.data.docs.first.get('customerID'),
+            customerFullNname:
+                snapshot.data.docs.first.get('customerFullNname'),
+            customerPhoneNum: snapshot.data.docs.first.get('customerPhoneNum'),
+            riderID: snapshot.data.docs.first.get('riderID'),
+            riderFullName: snapshot.data.docs.first.get('riderFullName'),
+            riderPhoneNum: snapshot.data.docs.first.get('riderPhoneNum'),
+            deliveryCharges: snapshot.data.docs.first.get('deliveryCharges'),
+            pickUpAddress: snapshot.data.docs.first.get('pickUpAddress'),
+            dropAddress: snapshot.data.docs.first.get('dropAddress'),
+            pickUpGeoPoint: snapshot.data.docs.first.get('pickUpGeoPoint'),
+            droppGeoPoint: snapshot.data.docs.first.get('droppGeoPoint'),
+            description: snapshot.data.docs.first.get('description'),
+            status: 'complete',
+            timestamp: snapshot.data.docs.first.get('timestamp').toDate(),
+          ),
+          snapshot.data.docs.first.id);
       // TODO notification on completion for respective customer
       setState(() {
         _markers = {};
@@ -413,25 +412,60 @@ class _RiderHomeState extends State<RiderHome> {
 
   void _onMapCreated(GoogleMapController controller) {
     _googleMapController = controller;
-
   }
 
   void renderPoints(AsyncSnapshot<QuerySnapshot> snapshot) {
     // setState(() {
-    GeoPoint pickUp =
-    snapshot.data.docs.first.get('pickUpGeoPoint');
-    GeoPoint drop =
-    snapshot.data.docs.first.get('droppGeoPoint');
+    GeoPoint pickUp = snapshot.data.docs.first.get('pickUpGeoPoint');
+    GeoPoint drop = snapshot.data.docs.first.get('droppGeoPoint');
     _markers.add(Marker(
       markerId: MarkerId('pickUpPoint'),
       position: LatLng(pickUp.latitude, pickUp.longitude),
       infoWindow: InfoWindow(title: 'PickUp Point'),
+      icon: pickUpMarker,
     ));
     _markers.add(Marker(
       markerId: MarkerId('dropPoint'),
       position: LatLng(drop.latitude, drop.longitude),
       infoWindow: InfoWindow(title: 'Drop Point'),
+      icon: dropMarker,
     ));
     // });
   }
+
+  void updateRiderStatus(String status) {
+    FirebaseFirestore.instance
+        .collection('riders')
+        .where('phone',
+            isEqualTo: FirebaseAuth.instance.currentUser.phoneNumber)
+        .get()
+        .then((querySnaphot) async {
+      if (querySnaphot.size == 1 && querySnaphot.docs.first.exists) {
+        try {
+          print('------------------------------------');
+          print('inside updateRiderModel');
+          await FirestoreService().updateRider(
+              RiderModel(
+                fullName: querySnaphot.docs.first.get('fullName'),
+                email: querySnaphot.docs.first.get('email'),
+                phone: querySnaphot.docs.first.get('phone'),
+                cnic: querySnaphot.docs.first.get('cnic'),
+                vehicleRegistrationNumber:
+                    querySnaphot.docs.first.get('vehicleRegistrationNumber'),
+                address: querySnaphot.docs.first.get('address'),
+                authID: FirebaseAuth.instance.currentUser.uid,
+                status: status,
+                timestamp: querySnaphot.docs.first.get('timestamp').toDate(),
+              ),
+              querySnaphot.docs.first.id);
+        } catch (e) {
+          print('------------------------------------');
+          print('-------rider home error----------');
+          print(e.toString());
+          print('------------------------------------');
+        }
+      }
+    });
+  }
+
 }

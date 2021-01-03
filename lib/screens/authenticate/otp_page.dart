@@ -106,14 +106,11 @@ class _OtpPageState extends State<OtpPage> {
                         .then((value) async {
                       if (value.user != null) {
                         print('user logged in');
-                        // Navigator.pushAndRemoveUntil(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (context) => Loading(
-                        //               user_id: value.user.uid,
-                        //               phone_number: '${widget.phone}',
-                        //             )),
-                        //     (route) => false);
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Loading()),
+                            (route) => false);
                       }
                     });
                   } catch (e) {
@@ -150,14 +147,11 @@ class _OtpPageState extends State<OtpPage> {
           if (value.user != null) {
             print('user logged in');
             // value.user.phoneNumber
-            // Navigator.pushAndRemoveUntil(
-            //     context,
-            //     MaterialPageRoute(
-            //         builder: (context) => Loading(
-            //               user_id: value.user.uid,
-            //               phone_number: value.user.phoneNumber,
-            //             )),
-            //     (route) => false);
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => Loading()),
+                (route) => false);
           }
         });
       },

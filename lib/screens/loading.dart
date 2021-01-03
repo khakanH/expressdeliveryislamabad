@@ -112,6 +112,7 @@ class _LoadingState extends State<Loading> {
                       querySnaphot.docs.first.get('vehicleRegistrationNumber'),
                   address: querySnaphot.docs.first.get('address'),
                   authID: FirebaseAuth.instance.currentUser.uid,
+                  status: querySnaphot.docs.first.get('status'),
                   timestamp: querySnaphot.docs.first.get('timestamp').toDate(),
                 ),
                 querySnaphot.docs.first.id);

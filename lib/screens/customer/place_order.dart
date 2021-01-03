@@ -31,7 +31,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
   String _dropLocation;
   int deliveryCharges;
 
-  bool isDisable = true;
+  bool isDisable = false;
 
   GeoPoint pickUpGeoPoint;
   GeoPoint dropGeoPoint;
@@ -118,7 +118,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
   @override
   Widget build(BuildContext context) {
 
-    _checkIfAnyActiveOrder(context);
+   // _checkIfAnyActiveOrder(context);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -179,25 +179,37 @@ class _PlaceOrderState extends State<PlaceOrder> {
                               print('place picker');
                               print(result.formattedAddress);
                               print(result.geometry.location);
-                              print(result.addressComponents[3].longName); // job done, welldone
+                              // print(result.addressComponents[3].longName); // job done, welldone
 
                               Navigator.of(context).pop();
                               setState(() {
                                 String locality = result.addressComponents[3].longName;
+                                // String locality = '' ;
+                                // List<AddressComponent> pickAdd = result.addressComponents;
+                                // if (pickAdd.contains('Islamabad')){
+                                //   locality = 'Islamabad';
+                                // }
+                                // if (pickAdd.contains('Rawalpindi')){
+                                //   locality = 'Rawalpindi';
+                                // }
                                 _pickUpController.text = result.formattedAddress;
                                 _pickUpLocation = locality;
                                 Location pickUpLocation = result.geometry.location;
                                 pickUpGeoPoint = new GeoPoint(pickUpLocation.lat, pickUpLocation.lng);
                                 print(pickUpGeoPoint.latitude);
                                 print(pickUpGeoPoint.latitude);
-                                print(locality);
+
+                                // print(pickAdd.contains('-------------------------'));
+                                // print(pickAdd.contains('Rawalpindi'));
+                                // print(pickAdd.contains('Islamabad'));
+                                // print(pickAdd.contains('-------------------------'));
+
                                 if  ((_dropLocation != null && _dropLocation.contains('Rawalpindi')) || _pickUpLocation.contains('Rawalpindi')){
                                   _deliveryChargesController.text = '300 PKR';
                                   deliveryCharges = 300;
-                                }else{
+                                }if (_pickUpLocation.contains('Islamabad')){
                                   _deliveryChargesController.text = '200 PKR';
                                   deliveryCharges = 200;
-
                                 }
                               });
                             },
@@ -266,7 +278,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                 if  (_dropLocation.contains('Rawalpindi') || (_pickUpLocation != null && _pickUpLocation.contains('Rawalpindi'))){
                                   _deliveryChargesController.text = '300 PKR';
                                   deliveryCharges = 300;
-                                }else{
+                                }if (_pickUpLocation.contains('Islamabad')){
                                   _deliveryChargesController.text = '200 PKR';
                                   deliveryCharges = 200;
                                 }
@@ -346,6 +358,35 @@ class _PlaceOrderState extends State<PlaceOrder> {
           ),
         ),
       ),
+    );
+  }
+
+
+  Future<void> _showMyDialog() {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Oops!'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Express Delivery Services are available for Islamabad and Rawalpindi.'),
+                // Text('Make sure?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

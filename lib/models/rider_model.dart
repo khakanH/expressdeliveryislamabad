@@ -12,6 +12,7 @@ class RiderModel {
   final String address;
 
   final String authID;
+  final String status;
 
   final DateTime timestamp;
 
@@ -24,6 +25,7 @@ class RiderModel {
       this.vehicleRegistrationNumber,
       this.address,
       this.authID,
+      this.status,
       this.timestamp});
 
   RiderModel.fromMap(Map<String, dynamic> data, String id)
@@ -34,6 +36,7 @@ class RiderModel {
         vehicleRegistrationNumber = data['vehicleRegistrationNumber'],
         address = data['address'],
         authID = data['authID'],
+        status = data['status'],
         timestamp = data['timestamp'].toDate(),
         id = id;
 
@@ -46,6 +49,7 @@ class RiderModel {
       "vehicleRegistrationNumber": vehicleRegistrationNumber,
       "address": address,
       "authID": authID,
+      "status": status,
       "timestamp": timestamp,
     };
   }

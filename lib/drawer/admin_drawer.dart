@@ -58,6 +58,7 @@ class AdminDrawer extends StatelessWidget {
                 ListTile(
                   leading: Icon(
                     Icons.lock_clock,
+                    color: Color(0xFFFEBC10),
                   ),
                   title: Text(
                     'SERVICE TIMING',

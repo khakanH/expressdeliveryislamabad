@@ -37,6 +37,7 @@ class _AddRiderState extends State<AddRider> {
               vehicleRegistrationNumber: _vehicleRegNum.text,
               address: _address.text,
               authID: '',
+              status: 'free',
               timestamp: Timestamp.now().toDate(),
             ));
             Navigator.pop(context);

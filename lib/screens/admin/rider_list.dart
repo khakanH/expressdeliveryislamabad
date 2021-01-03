@@ -3,6 +3,7 @@ import 'package:express_delivery/screens/rider/rider_details.dart';
 import 'package:express_delivery/services/firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RiderList extends StatefulWidget {
   @override
@@ -88,6 +89,13 @@ class _RiderListState extends State<RiderList> {
                                       riderModel: riderModel,
                                     )));
                       },
+                      // TODO check the functionality works fine.
+                      trailing: IconButton(
+                        icon: Icon(Icons.call),
+                        onPressed: () async {
+                          launch("tel://${riderModel.phone}");
+                        },
+                      ),
                     );
                   },
                 ),

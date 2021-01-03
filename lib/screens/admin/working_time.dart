@@ -23,32 +23,30 @@ class _WorkingTimeState extends State<WorkingTime> {
     return InkWell(
       onTap: () async {
         if (_key.currentState.validate()) {
-          if (doc_id.isEmpty){
-            try {
-              await FirestoreService().addWorkingTime(WorkingTimeModel(
-                from: _fromController.text,
-                to: _toController.text
-              ));
-              setState(() {
-
-              });
-            } catch (e) {
-              print(e.toString());
-            }
+          // if (doc_id.isEmpty){
+          //   try {
+          //     await FirestoreService().addWorkingTime(WorkingTimeModel(
+          //       from: _fromController.text,
+          //       to: _toController.text
+          //     ));
+          //     setState(() {
+          //
+          //     });
+          //   } catch (e) {
+          //     print(e.toString());
+          //   }
+          // }
+          // if (doc_id.isNotEmpty){
+          try {
+            await FirestoreService().updateWorkingTime(
+                WorkingTimeModel(
+                    from: _fromController.text, to: _toController.text),
+                'working_time');
+            setState(() {});
+          } catch (e) {
+            print(e.toString());
           }
-          if (doc_id.isNotEmpty){
-            try {
-              await FirestoreService().updateWorkingTime(WorkingTimeModel(
-                from: _fromController.text,
-                to: _toController.text
-              ), doc_id);
-              setState(() {
-
-              });
-            } catch (e) {
-              print(e.toString());
-            }
-          }
+          // }
         }
       },
       child: Container(
@@ -105,19 +103,24 @@ class _WorkingTimeState extends State<WorkingTime> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Please provide the details, where customers can place order.',
-                style: TextStyle(
-                  color: Color(0xFF29146F),
-                  fontSize: 18,
-                ),),
-                SizedBox(height: 20,),
+                Text(
+                  'Please provide the details, when customers can place order.',
+                  style: TextStyle(
+                    color: Color(0xFF29146F),
+                    fontSize: 18,
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
                 Text('From:'),
                 DateTimeField(
                   format: format,
                   onShowPicker: (context, currentValue) async {
                     final time = await showTimePicker(
                       context: context,
-                      initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                      initialTime: TimeOfDay.fromDateTime(
+                          currentValue ?? DateTime.now()),
                     );
                     return DateTimeField.convert(time);
                   },
@@ -131,14 +134,17 @@ class _WorkingTimeState extends State<WorkingTime> {
                     }
                   },
                 ),
-                SizedBox(height: 20,),
+                SizedBox(
+                  height: 20,
+                ),
                 Text('To:'),
                 DateTimeField(
                   format: format,
                   onShowPicker: (context, currentValue) async {
                     final time = await showTimePicker(
                       context: context,
-                      initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                      initialTime: TimeOfDay.fromDateTime(
+                          currentValue ?? DateTime.now()),
                     );
                     return DateTimeField.convert(time);
                   },
@@ -159,21 +165,24 @@ class _WorkingTimeState extends State<WorkingTime> {
                 SizedBox(
                   height: 40,
                 ),
-
-
-
                 Card(
                   child: FutureBuilder(
-                    future: FirebaseFirestore.instance.collection('working_time').get(),
-                    builder: (context, querySnapshot){
-                      if (querySnapshot.hasError){
+                    future: FirebaseFirestore.instance
+                        .collection('working_time')
+                        .get(),
+                    builder: (context, querySnapshot) {
+                      if (querySnapshot.hasError) {
                         print('error in future builder');
                       }
-                      if (querySnapshot.hasData){
-                        if (querySnapshot.data.size > 0){
-                          String currentTime = ' Current working time is set from ${querySnapshot.data.docs.first.get('from')} to ${querySnapshot.data.docs.first.get('to')}';
+                      if (querySnapshot.hasData) {
+                        if (querySnapshot.data.size > 0) {
+                          // doc_id = querySnapshot.data.docs.first.id;
+                          String currentTime =
+                              ' Current working time is set from ${querySnapshot.data.docs.first.get('from')} to ${querySnapshot.data.docs.first.get('to')}';
                           return Container(
-                            padding: EdgeInsets.all(30,),
+                            padding: EdgeInsets.all(
+                              30,
+                            ),
                             child: Center(
                               child: Text(
                                 currentTime,
@@ -182,10 +191,11 @@ class _WorkingTimeState extends State<WorkingTime> {
                             ),
                           );
                         }
-
                       }
                       return Container(
-                        padding: EdgeInsets.all(30,),
+                        padding: EdgeInsets.all(
+                          30,
+                        ),
                         child: Center(
                           child: Text(
                             'No working time set.',
@@ -197,7 +207,6 @@ class _WorkingTimeState extends State<WorkingTime> {
                   ),
                 )
               ],
-
             ),
           ),
         ),

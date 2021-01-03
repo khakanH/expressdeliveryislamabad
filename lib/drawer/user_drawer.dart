@@ -125,6 +125,7 @@ class UserDrawer extends StatelessWidget {
                   ),
                   onTap: () async {
                     await _auth.signOut();
+
                     Navigator.pop(context);
                     Navigator.pushAndRemoveUntil(
                             context,

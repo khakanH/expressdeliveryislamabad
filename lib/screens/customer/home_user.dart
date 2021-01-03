@@ -43,6 +43,16 @@ class _UserHomeState extends State<UserHome> {
 
   Set<Marker> _markers = Set();
 
+  BitmapDescriptor _riderMarker;
+
+  void setMarkers() async {
+    print('rider marker');
+    _riderMarker = await BitmapDescriptor.fromAssetImage(
+        ImageConfiguration(), 'assets/rider.png');
+    // dropMarker = await BitmapDescriptor.fromAssetImage(
+    //     ImageConfiguration(), 'assets/drop.png');
+  }
+
   static final CameraPosition _kIslamabad = CameraPosition(
     target: LatLng(33.6844, 73.0479),
     zoom: 15,
@@ -52,6 +62,7 @@ class _UserHomeState extends State<UserHome> {
   void initState() {
     super.initState();
     checkLocationPermission();
+    setMarkers();
   }
 
   bool _dragger = false;
@@ -60,16 +71,27 @@ class _UserHomeState extends State<UserHome> {
     return InkWell(
       onTap: () async {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => PlaceOrder(fullName: '${widget.fullName}',)));
+            context,
+            MaterialPageRoute(
+                builder: (context) => PlaceOrder(
+                      fullName: '${widget.fullName}',
+                    )));
       },
-      child: Card(
-        child: Container(
-          padding: EdgeInsets.all(30,),
-          child: Center(
-            child: Text(
-              'Place Order',
-              textAlign: TextAlign.center,
-            ),
+      child: Container(
+        padding: EdgeInsets.all(
+          10,
+        ),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(50)),
+            gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [Color(0xFF29146F), Color(0xFFFEBC10) ])),
+        child: Center(
+          child: Text(
+            'Place Order',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 24, color: Colors.white),
           ),
         ),
       ),
@@ -117,7 +139,10 @@ class _UserHomeState extends State<UserHome> {
               }
 
               if (snapshot.hasData) {
-                if (snapshot.data.size == 1) {
+                print('-------------------');
+                print(FirebaseAuth.instance.currentUser.uid);
+                print(snapshot.data.size);
+                if (snapshot.data.size > 0) {
                   if (snapshot.data.docs.first.get('status') == 'pending') {
                     return DraggableScrollableSheet(
                       initialChildSize: 0.30,
@@ -133,7 +158,6 @@ class _UserHomeState extends State<UserHome> {
                     );
                   }
                   if (snapshot.data.docs.first.get('status') == 'assigned') {
-
                     return StreamBuilder(
                         stream: FirebaseFirestore.instance
                             .collection('riders_location')
@@ -141,7 +165,7 @@ class _UserHomeState extends State<UserHome> {
                             .snapshots(),
                         builder: (context,
                             AsyncSnapshot<DocumentSnapshot> documentSnapshot) {
-                          if (documentSnapshot.hasData) {
+                          if (documentSnapshot.hasData && documentSnapshot.data.exists) {
                             print('------------------------------------');
                             print(documentSnapshot.data.get('riderDocID'));
 
@@ -160,6 +184,7 @@ class _UserHomeState extends State<UserHome> {
                               ),
                               position:
                                   LatLng(current.latitude, current.longitude),
+                              icon: _riderMarker,
                             );
 
                             _markers.add(resultMarker);
@@ -167,7 +192,7 @@ class _UserHomeState extends State<UserHome> {
                                 CameraUpdate.newCameraPosition(CameraPosition(
                               target:
                                   LatLng(current.latitude, current.longitude),
-                              zoom: 12,
+                              zoom: 15,
                             )));
                             return DraggableScrollableSheet(
                               initialChildSize: 0.30,
@@ -186,6 +211,9 @@ class _UserHomeState extends State<UserHome> {
                         });
                   }
                 } else {
+                  // setState(() {
+                    _markers = {};
+                  // });
                   print('------------------------------------');
                   print('no pending | assigned order in queue');
                   print('------------------------------------');
@@ -195,78 +223,137 @@ class _UserHomeState extends State<UserHome> {
               return Container();
             },
           ),
-          Positioned(
-              top: 50,
-              right: 10,
-              left: 10,
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('working_time').snapshots(),
-                builder:
-                    (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('working_time')
+                .snapshots(),
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasError) {
+                return Text("Something went wrong");
+              }
 
-                  if (snapshot.hasError) {
-                    return Text("Something went wrong");
-                  }
+              if (snapshot.hasData) {
+                if (snapshot.data.size == 1) {
+                  if (snapshot.data.docs.first
+                          .get('from')
+                          .toString()
+                          .isNotEmpty &&
+                      snapshot.data.docs.first
+                          .get('to')
+                          .toString()
+                          .isNotEmpty) {
+                    TimeOfDay now = TimeOfDay.now();
+                    List fromString = snapshot.data.docs.first
+                        .get('from')
+                        .toString()
+                        .split(":");
+                    print(fromString.first);
+                    print(fromString.last);
+                    TimeOfDay fromTime = TimeOfDay(
+                        hour: int.parse(fromString.first),
+                        minute: int.parse(fromString.last));
+                    List toString = snapshot.data.docs.first
+                        .get('to')
+                        .toString()
+                        .split(":");
+                    print(toString.first);
+                    print(toString.last);
+                    TimeOfDay toTime = TimeOfDay(
+                        hour: int.parse(toString.first),
+                        minute: int.parse(toString.last));
 
-                  if (snapshot.hasData) {
-                    if (snapshot.data.size == 1) {
-                      if (snapshot.data.docs.first.get('from').toString().isNotEmpty && snapshot.data.docs.first.get('to').toString().isNotEmpty) {
-                        TimeOfDay now = TimeOfDay.now();
-                        List fromString = snapshot.data.docs.first.get('from').toString().split(":");
-                        print(fromString.first);
-                        print(fromString.last);
-                        TimeOfDay fromTime = TimeOfDay(hour: int.parse(fromString.first), minute: int.parse(fromString.last));
-                        List toString = snapshot.data.docs.first.get('to').toString().split(":");
-                        print(toString.first);
-                        print(toString.last);
-                        TimeOfDay toTime = TimeOfDay(hour: int.parse(toString.first), minute: int.parse(toString.last));
+                    double _doubleNowTime =
+                        now.hour.toDouble() + (now.minute.toDouble() / 60);
+                    double _doubleFormTime = fromTime.hour.toDouble() +
+                        (fromTime.minute.toDouble() / 60);
+                    double _doubleToTime = toTime.hour.toDouble() +
+                        (toTime.minute.toDouble() / 60);
+                    if (_doubleNowTime > _doubleFormTime &&
+                        _doubleNowTime < _doubleToTime) {
+                      return StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance
+                              .collection('orders')
+                              .where('customerID',
+                                  isEqualTo:
+                                      FirebaseAuth.instance.currentUser.uid)
+                              .where('status',
+                                  whereIn: ['pending', 'assigned']).snapshots(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasError) {
+                              return Text("Something went wrong");
+                            }
 
-                        double _doubleNowTime = now.hour.toDouble() +
-                            (now.minute.toDouble() / 60);
-                        double _doubleFormTime = fromTime.hour.toDouble() +
-                            (fromTime.minute.toDouble() / 60);
-                        double _doubleToTime = toTime.hour.toDouble() +
-                            (toTime.minute.toDouble() / 60);
-                        if(_doubleNowTime > _doubleFormTime && _doubleNowTime < _doubleToTime ){
-                          return _submitButton();
-                        }else{
-                          return Card(
-                            child: Container(
-                              padding: EdgeInsets.all(30,),
-                              child: Center(
-                                child: Text(
-                                  'Express Delivery provide services between 09:00 AM to 05:00 PM.',
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                          );
+                            if (snapshot.hasData) {
+                              print('-------------------');
+                              print(FirebaseAuth.instance.currentUser.uid);
+                              print(snapshot.data.size);
+                              if (snapshot.data.size > 0) {
+                                print(
+                                    'cannot place order, as customer already have an order in queue');
+                              } else {
+                                print('------------------------------------');
+                                print('no pending | assigned order in queue');
+                                print('------------------------------------');
+                                return Positioned(
+                                    bottom: 10,
+                                    right: 10,
+                                    left: 10,
+                                    child: _submitButton());
+                              }
+                            }
 
-                        }
-
-                      }
-
+                            return Container();
+                          });
                     } else {
-                      return Card(
-                        child: Container(
-                          padding: EdgeInsets.all(30,),
-                          child: Center(
-                            child: Text(
-                              'Express Delivery working time not set.',
-                              textAlign: TextAlign.center,
+                      String fromString = formatTimeOfDay(fromTime);
+                      String toString = formatTimeOfDay(toTime);
+                      return Positioned(
+                        bottom: 10,
+                        right: 10,
+                        left: 10,
+                        child: Card(
+                          child: Container(
+                            padding: EdgeInsets.all(
+                              30,
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Express Delivery provide services between $fromString to $toString.',
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                           ),
                         ),
                       );
                     }
                   }
+                } else {
+                  print('working time error, more than one document found');
+                  return Positioned(
+                    bottom: 10,
+                    right: 10,
+                    left: 10,
+                    child: Card(
+                      child: Container(
+                        padding: EdgeInsets.all(
+                          30,
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Express Delivery working time not set.',
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+              }
 
-                  return Container();
-                },
-              ),
-          ),
-
+              return Container();
+            },
+          )
         ],
       ),
     );
@@ -300,7 +387,7 @@ class _UserHomeState extends State<UserHome> {
     return Container(
       color: Colors.blue[50],
       child: GoogleMap(
-        mapType: MapType.terrain,
+        mapType: MapType.normal,
         zoomControlsEnabled: false,
         initialCameraPosition: _kIslamabad,
         onMapCreated: (GoogleMapController controller) {
@@ -360,11 +447,9 @@ class _UserHomeState extends State<UserHome> {
                   endIndent: 20,
                 ),
                 ListTile(
-                  leading: Icon(
-                    Icons.circle,
-                    size: 10,
-                    color: Color(0xFF29146F),
-                  ),
+                  leading: Image.asset('assets/pick.png',
+                    width: 24,
+                    height: 24,),
                   visualDensity: VisualDensity(horizontal: 0, vertical: -4),
                   title: Align(
                     alignment: Alignment(-1.4, 0),
@@ -383,11 +468,9 @@ class _UserHomeState extends State<UserHome> {
                   ),
                 ),
                 ListTile(
-                  leading: Icon(
-                    Icons.circle,
-                    size: 10,
-                    color: Color(0xFFFEBC10),
-                  ),
+                  leading: Image.asset('assets/drop.png',
+                    width: 24,
+                    height: 24,),
                   visualDensity: VisualDensity(horizontal: 0, vertical: -4),
                   title: Align(
                     alignment: Alignment(-1.4, 0),
@@ -442,7 +525,7 @@ class _UserHomeState extends State<UserHome> {
                   color: Colors.black12,
                 ),
                 ListTile(
-                  onTap: (){
+                  onTap: () {
                     _showMyDialog(snapshot);
                   },
                   leading: Icon(
@@ -504,22 +587,20 @@ class _UserHomeState extends State<UserHome> {
                     size: 50,
                   ),
                   title: Text(snapshot.data.docs.first.get('riderFullName')),
-                  subtitle: Text(snapshot.data.docs.first.get('riderPhoneNum')),
+                  subtitle: Text('+92-3171909272'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
                         icon: Icon(Icons.call),
                         onPressed: () async {
-                          launch(
-                              "tel://${snapshot.data.docs.first.get('riderPhoneNum')}");
+                          launch("tel://+923171909272");
                         },
                       ),
                       IconButton(
                         icon: Icon(Icons.message),
                         onPressed: () async {
-                          launch(
-                              "sms:${snapshot.data.docs.first.get('riderPhoneNum')}");
+                          launch("sms:+923171909272");
                         },
                       ),
                     ],
@@ -533,11 +614,9 @@ class _UserHomeState extends State<UserHome> {
                   endIndent: 20,
                 ),
                 ListTile(
-                  leading: Icon(
-                    Icons.circle,
-                    size: 10,
-                    color: Color(0xFF29146F),
-                  ),
+                  leading: Image.asset('assets/pick.png',
+                    width: 24,
+                    height: 24,),
                   visualDensity: VisualDensity(horizontal: 0, vertical: -4),
                   title: Align(
                     alignment: Alignment(-1.4, 0),
@@ -556,11 +635,9 @@ class _UserHomeState extends State<UserHome> {
                   ),
                 ),
                 ListTile(
-                  leading: Icon(
-                    Icons.circle,
-                    size: 10,
-                    color: Color(0xFFFEBC10),
-                  ),
+                  leading: Image.asset('assets/drop.png',
+                    width: 24,
+                    height: 24,),
                   visualDensity: VisualDensity(horizontal: 0, vertical: -4),
                   title: Align(
                     alignment: Alignment(-1.4, 0),
@@ -635,14 +712,14 @@ class _UserHomeState extends State<UserHome> {
           actions: <Widget>[
             TextButton(
               child: Text('Yes'),
-              onPressed: ()  {
+              onPressed: () {
                 confirmOrderCancel(snapshot);
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
               child: Text('No'),
-              onPressed: ()  {
+              onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
@@ -652,7 +729,6 @@ class _UserHomeState extends State<UserHome> {
     );
   }
 
-
   void confirmOrderCancel(AsyncSnapshot<QuerySnapshot> snapshot) async {
     print('cancel order confirmed');
     print(snapshot.data.docs.first.id);
@@ -660,7 +736,8 @@ class _UserHomeState extends State<UserHome> {
       await FirestoreService().updateOrder(
           OrderModel(
             customerID: snapshot.data.docs.first.get('customerID'),
-            customerFullNname: snapshot.data.docs.first.get('customerFullNname'),
+            customerFullNname:
+                snapshot.data.docs.first.get('customerFullNname'),
             customerPhoneNum: snapshot.data.docs.first.get('customerPhoneNum'),
             riderID: snapshot.data.docs.first.get('riderID'),
             riderFullName: snapshot.data.docs.first.get('riderFullName'),
@@ -681,5 +758,12 @@ class _UserHomeState extends State<UserHome> {
     }
   }
 
-
+  String formatTimeOfDay(TimeOfDay tod) {
+    final now = new DateTime.now();
+    final dt = DateTime(now.year, now.month, now.day, tod.hour, tod.minute);
+    final format = DateFormat.jm();  //"6:00 AM"
+    return format.format(dt);
+  }
 }
+
+// TODO next time use different aproch to handle the rider marker

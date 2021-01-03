@@ -73,7 +73,6 @@ class OrderDetails extends StatelessWidget {
                 enabled: false,
                 decoration: InputDecoration(
                   labelText: 'Rider Phone Number',
-                  prefix: Text('+92'),
                 ),
                 keyboardType: TextInputType.number,
               ),

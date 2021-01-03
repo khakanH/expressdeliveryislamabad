@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.deepPurple,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      debugShowCheckedModeBanner: true,
+      debugShowCheckedModeBanner: false,
       home: Wrapper(),
     );
   }

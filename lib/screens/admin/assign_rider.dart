@@ -30,7 +30,7 @@ class _AssignRiderState extends State<AssignRider> {
           try {
             await FirestoreService().updateOrder(
                 OrderModel(
-                  customerID: widget.orderModel.id,
+                  customerID: widget.orderModel.customerID,
                   customerFullNname: widget.orderModel.customerFullNname,
                   customerPhoneNum: widget.orderModel.customerPhoneNum,
                   riderID: rider_id,
@@ -131,6 +131,7 @@ class _AssignRiderState extends State<AssignRider> {
                     stream: FirebaseFirestore.instance
                         .collection("riders")
                         .where('authID', isNotEqualTo: '')
+                        .where('status', isEqualTo: 'free')
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasError && !snapshot.hasData) {
