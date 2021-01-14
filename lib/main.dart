@@ -1,7 +1,3 @@
-import 'package:express_delivery/screens/admin/home_admin.dart';
-import 'package:express_delivery/screens/customer/home_user.dart';
-import 'package:express_delivery/screens/loading.dart';
-import 'package:express_delivery/screens/rider/home_rider.dart';
 import 'package:express_delivery/wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +6,21 @@ import 'package:google_fonts/google_fonts.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+//   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+//       FlutterLocalNotificationsPlugin();
+// // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
+//   const AndroidInitializationSettings initializationSettingsAndroid =
+//       AndroidInitializationSettings('app_icon');
+//   final IOSInitializationSettings initializationSettingsIOS =
+//       IOSInitializationSettings();
+//   final MacOSInitializationSettings initializationSettingsMacOS =
+//       MacOSInitializationSettings();
+//   final InitializationSettings initializationSettings = InitializationSettings(
+//       android: initializationSettingsAndroid,
+//       iOS: initializationSettingsIOS,
+//       macOS: initializationSettingsMacOS);
+//   await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+//       onSelectNotification: selectNotification);
   runApp(MyApp());
 }
 
@@ -32,3 +43,5 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+

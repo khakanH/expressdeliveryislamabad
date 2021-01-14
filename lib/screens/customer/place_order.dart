@@ -86,34 +86,34 @@ class _PlaceOrderState extends State<PlaceOrder> {
     );
   }
 
-  void _checkIfAnyActiveOrder(BuildContext context) {
-    FirebaseFirestore.instance
-        .collection('orders')
-        .where('customerID', isEqualTo: FirebaseAuth.instance.currentUser.uid)
-        .where('status', whereIn: ['pending', 'assigned'])
-        .get()
-        .then((querySnaphot) {
-      if (querySnaphot.size == 1 && querySnaphot.docs.first.exists) {
-        print(
-            'Already an order for ${querySnaphot.docs.first.get('customerID')} is in ${querySnaphot.docs.first.get('status')}');
-        // Scaffold.of(context).showSnackBar(SnackBar(
-        //   content: Text(
-        //     'Already an order for ${querySnaphot.docs.first.get('customerID')} is in ${querySnaphot.docs.first.get('status')}',
-        //     style: TextStyle(
-        //       color: Colors.white,
-        //     ),
-        //   ),
-        //   duration: Duration(seconds: 5),
-        //   backgroundColor: Color(0xFF29146F),
-        // ));
-      } else {
-        print('No order with pending | assigned found');
-        setState(() {
-          isDisable = false;
-        });
-      }
-    });
-  }
+  // void _checkIfAnyActiveOrder(BuildContext context) {
+  //   FirebaseFirestore.instance
+  //       .collection('orders')
+  //       .where('customerID', isEqualTo: FirebaseAuth.instance.currentUser.uid)
+  //       .where('status', whereIn: ['pending', 'assigned'])
+  //       .get()
+  //       .then((querySnaphot) {
+  //     if (querySnaphot.size == 1 && querySnaphot.docs.first.exists) {
+  //       print(
+  //           'Already an order for ${querySnaphot.docs.first.get('customerID')} is in ${querySnaphot.docs.first.get('status')}');
+  //       // Scaffold.of(context).showSnackBar(SnackBar(
+  //       //   content: Text(
+  //       //     'Already an order for ${querySnaphot.docs.first.get('customerID')} is in ${querySnaphot.docs.first.get('status')}',
+  //       //     style: TextStyle(
+  //       //       color: Colors.white,
+  //       //     ),
+  //       //   ),
+  //       //   duration: Duration(seconds: 5),
+  //       //   backgroundColor: Color(0xFF29146F),
+  //       // ));
+  //     } else {
+  //       print('No order with pending | assigned found');
+  //       setState(() {
+  //         isDisable = false;
+  //       });
+  //     }
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -362,31 +362,31 @@ class _PlaceOrderState extends State<PlaceOrder> {
   }
 
 
-  Future<void> _showMyDialog() {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Oops!'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text('Express Delivery Services are available for Islamabad and Rawalpindi.'),
-                // Text('Make sure?'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // Future<void> _showMyDialog() {
+  //   return showDialog<void>(
+  //     context: context,
+  //     barrierDismissible: false, // user must tap button!
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text('Oops!'),
+  //         content: SingleChildScrollView(
+  //           child: ListBody(
+  //             children: <Widget>[
+  //               Text('Express Delivery Services are available for Islamabad and Rawalpindi.'),
+  //               // Text('Make sure?'),
+  //             ],
+  //           ),
+  //         ),
+  //         actions: <Widget>[
+  //           TextButton(
+  //             child: Text('OK'),
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 }

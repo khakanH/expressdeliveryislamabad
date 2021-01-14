@@ -1,15 +1,15 @@
+import 'dart:io';
+
 import 'package:express_delivery/drawer/admin_drawer.dart';
 import 'package:express_delivery/models/order_model.dart';
 import 'package:express_delivery/screens/admin/assign_rider.dart';
 import 'package:express_delivery/screens/admin/order_details.dart';
-import 'package:express_delivery/screens/admin/orders.dart';
 import 'package:express_delivery/services/firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AdminHome extends StatefulWidget {
-
   final String fullName;
 
   const AdminHome({Key key, this.fullName}) : super(key: key);
@@ -18,7 +18,7 @@ class AdminHome extends StatefulWidget {
   _AdminHomeState createState() => _AdminHomeState();
 }
 
-class _AdminHomeState extends State<AdminHome> {
+class _AdminHomeState extends State<AdminHome> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +36,9 @@ class _AdminHomeState extends State<AdminHome> {
         backgroundColor: Color(0xFF29146F),
         elevation: 0,
       ),
-      drawer: AdminDrawer(fullName: '${widget.fullName}',),
+      drawer: AdminDrawer(
+        fullName: '${widget.fullName}',
+      ),
       body: Container(
         padding: EdgeInsets.all(30),
         child: SingleChildScrollView(
@@ -53,11 +55,12 @@ class _AdminHomeState extends State<AdminHome> {
                   ),
                 ),
               ),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               StreamBuilder<List<OrderModel>>(
-                  stream:
-                  FirestoreService().getOrders(status: 'pending'),
-                  builder: (context,snapshot) {
+                  stream: FirestoreService().getOrders(status: 'pending'),
+                  builder: (context, snapshot) {
                     if (snapshot.hasError && !snapshot.hasData) {
                       print(snapshot.error.toString());
                       return Container(
@@ -66,7 +69,7 @@ class _AdminHomeState extends State<AdminHome> {
                         ),
                       );
                     }
-                    if (snapshot.hasData){
+                    if (snapshot.hasData) {
                       return SingleChildScrollView(
                         child: Container(
                           child: ListView.builder(
@@ -95,10 +98,12 @@ class _AdminHomeState extends State<AdminHome> {
                                     fontSize: 14,
                                   ),
                                 ),
-
                                 onTap: () {
                                   Navigator.push(
-                                      context, MaterialPageRoute(builder: (context) => AssignRider(orderModel: orderModel)));
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => AssignRider(
+                                              orderModel: orderModel)));
                                 },
                               );
                             },
@@ -108,9 +113,11 @@ class _AdminHomeState extends State<AdminHome> {
                     }
                     return Container();
                   }),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               Text(
-                'In Porgress',
+                'In Progress',
                 style: GoogleFonts.montserrat(
                   textStyle: TextStyle(
                     color: Color(0xFF29146F),
@@ -119,11 +126,12 @@ class _AdminHomeState extends State<AdminHome> {
                   ),
                 ),
               ),
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               StreamBuilder<List<OrderModel>>(
-                  stream:
-                  FirestoreService().getOrders(status: 'assigned'),
-                  builder: (context,snapshot) {
+                  stream: FirestoreService().getOrders(status: 'assigned'),
+                  builder: (context, snapshot) {
                     if (snapshot.hasError && !snapshot.hasData) {
                       print(snapshot.error.toString());
                       return Container(
@@ -132,7 +140,7 @@ class _AdminHomeState extends State<AdminHome> {
                         ),
                       );
                     }
-                    if (snapshot.hasData){
+                    if (snapshot.hasData) {
                       return SingleChildScrollView(
                         child: Container(
                           child: ListView.builder(
@@ -161,10 +169,12 @@ class _AdminHomeState extends State<AdminHome> {
                                     fontSize: 14,
                                   ),
                                 ),
-
                                 onTap: () {
                                   Navigator.push(
-                                      context, MaterialPageRoute(builder: (context) => OrderDetails(orderModel: orderModel)));
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => OrderDetails(
+                                              orderModel: orderModel)));
                                 },
                               );
                             },
@@ -180,4 +190,53 @@ class _AdminHomeState extends State<AdminHome> {
       ),
     );
   }
+
+
+  @override
+  void initState() {
+    super.initState();
+    print('-------------');
+    print('initState');
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+   WidgetsBinding.instance.removeObserver(this);
+    print('-------------');
+    print('dispose');
+    super.dispose();
+  }
+
+  void startNewOrderService() async {
+    if(Platform.isAndroid){
+      var methodChannel = MethodChannel("com.vconekt.express_delivery");
+      String data = await methodChannel.invokeMethod("startNewOrderService");
+      debugPrint(data);
+    }
+  }
+
+  void stopNewOrderService() async {
+    if(Platform.isAndroid){
+      var methodChannel = MethodChannel("com.vconekt.express_delivery");
+      String data = await methodChannel.invokeMethod("stopNewOrderService");
+      debugPrint(data);
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+
+    print('-------------');
+    print('state = $state');
+
+    if (state == AppLifecycleState.paused){
+      startNewOrderService();
+    }
+    if (state == AppLifecycleState.resumed){
+      stopNewOrderService();
+    }
+
+  }
+
 }

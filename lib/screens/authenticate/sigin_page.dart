@@ -12,32 +12,32 @@ class _SignInPageState extends State<SignInPage> {
   TextEditingController _controller = new TextEditingController();
   bool validate = false;
 
-  Widget _entryField(String title) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            title,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          TextField(
-            maxLength: 10,
-            decoration: InputDecoration(
-                prefixText: '+92',
-                border: InputBorder.none,
-                fillColor: Color(0xfff3f3f4),
-                filled: true),
-            controller: _controller,
-          )
-        ],
-      ),
-    );
-  }
+  // Widget _entryField(String title) {
+  //   return Container(
+  //     margin: EdgeInsets.symmetric(vertical: 10),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: <Widget>[
+  //         Text(
+  //           title,
+  //           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+  //         ),
+  //         SizedBox(
+  //           height: 5,
+  //         ),
+  //         TextField(
+  //           maxLength: 10,
+  //           decoration: InputDecoration(
+  //               prefixText: '+92',
+  //               border: InputBorder.none,
+  //               fillColor: Color(0xfff3f3f4),
+  //               filled: true),
+  //           controller: _controller,
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _submitButton() {
     return InkWell(

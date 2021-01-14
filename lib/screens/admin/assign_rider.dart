@@ -19,7 +19,7 @@ class _AssignRiderState extends State<AssignRider> {
   TextEditingController _riderPhoneControl = new TextEditingController();
   TextEditingController _riderNameControl = new TextEditingController();
 
-  String rider_id;
+  String riderId;
 
   Widget _submitButton() {
     return InkWell(
@@ -33,7 +33,7 @@ class _AssignRiderState extends State<AssignRider> {
                   customerID: widget.orderModel.customerID,
                   customerFullNname: widget.orderModel.customerFullNname,
                   customerPhoneNum: widget.orderModel.customerPhoneNum,
-                  riderID: rider_id,
+                  riderID: riderId,
                   riderFullName: _riderNameControl.text,
                   riderPhoneNum: _riderPhoneControl.text,
                   deliveryCharges: widget.orderModel.deliveryCharges,
@@ -161,8 +161,8 @@ class _AssignRiderState extends State<AssignRider> {
                             items: riders,
                             isExpanded: true,
                             onChanged: (snap) {
-                              rider_id = snap.get('authID');
-                              print(rider_id);
+                              riderId = snap.get('authID');
+                              print(riderId);
                               _riderNameControl.text = snap.get('fullName');
                               _riderPhoneControl.text = snap.get('phone');
                             },

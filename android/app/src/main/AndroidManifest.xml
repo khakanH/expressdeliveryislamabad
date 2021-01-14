@@ -8,15 +8,23 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
+    <!--        android:name="io.flutter.app.FlutterApplication"-->
+<!--    android:name=".App"-->
     <application
-        android:name="io.flutter.app.FlutterApplication"
+        android:name=".App"
         android:label="Express Delivery"
         android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher">
 
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCN-2fyocInwIfJ5EZhLgiWpA9cOY2sWV8"/>
+
+        <service android:name=".CheckForAssignedOrder" android:enabled="true" android:exported="true"/>
+        <service android:name=".CheckForNewOrder" android:enabled="true" android:exported="true"/>
 
         <activity
             android:name=".MainActivity"
@@ -47,6 +55,12 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

@@ -1,4 +1,3 @@
-import 'package:express_delivery/models/customer_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
@@ -7,9 +6,9 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // create user object based on FirebaseUser
-  CustomerModel _customerFromFirebaseUser(User firebaseUser){
-    return firebaseUser != null ? CustomerModel() : null;
-  }
+  // CustomerModel _customerFromFirebaseUser(User firebaseUser){
+  //   return firebaseUser != null ? CustomerModel() : null;
+  // }
 
   Stream<User> get user{
     return _auth.authStateChanges();

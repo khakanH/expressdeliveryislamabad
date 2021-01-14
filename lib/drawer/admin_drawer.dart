@@ -1,12 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:express_delivery/screens/admin/order_details.dart';
 import 'package:express_delivery/screens/admin/orders.dart';
 import 'package:express_delivery/screens/admin/add_rider.dart';
 import 'package:express_delivery/screens/admin/rider_list.dart';
 import 'package:express_delivery/screens/admin/working_time.dart';
 import 'package:express_delivery/screens/get_in_page.dart';
 import 'package:express_delivery/services/auth.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AdminDrawer extends StatelessWidget {
@@ -129,7 +126,7 @@ class AdminDrawer extends StatelessWidget {
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => Orders(order_status: 'complete',)));
+                        context, MaterialPageRoute(builder: (context) => Orders(orderStatus: 'complete',)));
                   },
                 ),
                 ListTile(
@@ -148,7 +145,7 @@ class AdminDrawer extends StatelessWidget {
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => Orders(order_status: 'canceled',)));
+                        context, MaterialPageRoute(builder: (context) => Orders(orderStatus: 'canceled',)));
                   },
                 ),
                 ListTile(

@@ -12,7 +12,7 @@ class UserHistory extends StatefulWidget {
 
 class _UserHistoryState extends State<UserHistory> {
   Widget _historyItem(
-      {DateTime time, String price, String point, String point_des}) {
+      {DateTime time, String price, String point, String pointDes}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -78,7 +78,7 @@ class _UserHistoryState extends State<UserHistory> {
               title: Align(
                 alignment: Alignment(-1.4, 0),
                 child: Text(
-                  point_des,
+                  pointDes,
                   style: TextStyle(
                     color: Color(0xFF29146F),
                     fontWeight: FontWeight.bold,
@@ -161,7 +161,7 @@ class _UserHistoryState extends State<UserHistory> {
                       );
                       return _historyItem(
                           point: orderModel.pickUpAddress,
-                          point_des: orderModel.dropAddress,
+                          pointDes: orderModel.dropAddress,
                           time: orderModel.timestamp,
                           price: orderModel.deliveryCharges.toString());
                     }),

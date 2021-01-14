@@ -17,7 +17,7 @@ class _WorkingTimeState extends State<WorkingTime> {
   TextEditingController _toController = new TextEditingController();
   final format = DateFormat("HH:mm");
 
-  String doc_id = '';
+  String docId = '';
 
   Widget _submitButton() {
     return InkWell(

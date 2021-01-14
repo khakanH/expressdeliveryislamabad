@@ -14,7 +14,7 @@ class OtpPage extends StatefulWidget {
 }
 
 class _OtpPageState extends State<OtpPage> {
-  String _verification_code;
+  String _verificationCode;
 
   final TextEditingController _pinPutController = TextEditingController();
   final FocusNode _pinPutFocusNode = FocusNode();
@@ -28,7 +28,7 @@ class _OtpPageState extends State<OtpPage> {
 
   @override
   Widget build(BuildContext context) {
-    final node = FocusScope.of(context);
+    // final node = FocusScope.of(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -102,7 +102,7 @@ class _OtpPageState extends State<OtpPage> {
                   try {
                     await FirebaseAuth.instance
                         .signInWithCredential(PhoneAuthProvider.credential(
-                            verificationId: _verification_code, smsCode: pin))
+                            verificationId: _verificationCode, smsCode: pin))
                         .then((value) async {
                       if (value.user != null) {
                         print('user logged in');
@@ -160,15 +160,14 @@ class _OtpPageState extends State<OtpPage> {
       },
       codeSent: (String verificationID, int resendToken) {
         setState(() {
-          _verification_code = verificationID;
+          _verificationCode = verificationID;
         });
       },
       codeAutoRetrievalTimeout: (String verificationID) {
         setState(() {
-          _verification_code = verificationID;
+          _verificationCode = verificationID;
         });
       },
-      timeout: Duration(seconds: 120),
     );
   }
 

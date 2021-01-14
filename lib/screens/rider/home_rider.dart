@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:express_delivery/drawer/rider_drawer.dart';
 import 'package:express_delivery/models/order_model.dart';
@@ -6,6 +8,7 @@ import 'package:express_delivery/models/riders_loc_model.dart';
 import 'package:express_delivery/services/firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -19,7 +22,7 @@ class RiderHome extends StatefulWidget {
   _RiderHomeState createState() => _RiderHomeState();
 }
 
-class _RiderHomeState extends State<RiderHome> {
+class _RiderHomeState extends State<RiderHome> with WidgetsBindingObserver {
   Set<Marker> _markers = {};
   BitmapDescriptor pickUpMarker;
   BitmapDescriptor dropMarker;
@@ -30,6 +33,9 @@ class _RiderHomeState extends State<RiderHome> {
   void initState() {
     super.initState();
     setMarkers();
+    print('-------------');
+    print('initState');
+    WidgetsBinding.instance.addObserver(this);
   }
 
   static final CameraPosition _kIslamabad = CameraPosition(
@@ -77,7 +83,7 @@ class _RiderHomeState extends State<RiderHome> {
       ),
       body: Stack(
         children: <Widget>[
-          CustomGoogleMap(),
+          customGoogleMap(),
           StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
                 .collection('orders')
@@ -290,7 +296,7 @@ class _RiderHomeState extends State<RiderHome> {
     );
   }
 
-  Widget CustomGoogleMap() {
+  Widget customGoogleMap() {
     return Container(
       color: Colors.blue[50],
       child: GoogleMap(
@@ -299,8 +305,8 @@ class _RiderHomeState extends State<RiderHome> {
         initialCameraPosition: _kIslamabad,
         onMapCreated: _onMapCreated,
         myLocationEnabled: true,
-        markers: _markers,
         myLocationButtonEnabled: true,
+        markers: _markers,
       ),
     );
   }
@@ -468,4 +474,44 @@ class _RiderHomeState extends State<RiderHome> {
     });
   }
 
+
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    print('-------------');
+    print('dispose');
+    super.dispose();
+  }
+
+  void startNewAssignedOrderService() async {
+    if(Platform.isAndroid){
+      var methodChannel = MethodChannel("com.vconekt.express_delivery");
+      String data = await methodChannel.invokeMethod("startNewAssignedOrderService");
+      debugPrint(data);
+    }
+  }
+
+  void stopAssignedOrderService() async {
+    if(Platform.isAndroid){
+      var methodChannel = MethodChannel("com.vconekt.express_delivery");
+      String data = await methodChannel.invokeMethod("stopAssignedOrderService");
+      debugPrint(data);
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+
+    print('-------------');
+    print('state = $state');
+
+    if (state == AppLifecycleState.paused){
+      startNewAssignedOrderService();
+    }
+    if (state == AppLifecycleState.resumed){
+      stopAssignedOrderService();
+    }
+
+  }
 }

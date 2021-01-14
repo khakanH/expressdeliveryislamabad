@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart' as perm;
 import 'package:url_launcher/url_launcher.dart';
 
@@ -39,7 +38,7 @@ class _UserHomeState extends State<UserHome> {
   // Completer<GoogleMapController> _controller = Completer();
 
   GoogleMapController _googleMapController;
-  PermissionStatus _permissionStatus;
+  // PermissionStatus _permissionStatus;
 
   Set<Marker> _markers = Set();
 
@@ -65,7 +64,6 @@ class _UserHomeState extends State<UserHome> {
     setMarkers();
   }
 
-  bool _dragger = false;
 
   Widget _submitButton() {
     return InkWell(
@@ -122,7 +120,7 @@ class _UserHomeState extends State<UserHome> {
       ),
       body: Stack(
         children: <Widget>[
-          CustomGoogleMap(),
+          customGoogleMap(),
           StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
                 .collection('orders')
@@ -366,7 +364,7 @@ class _UserHomeState extends State<UserHome> {
     if (!_locationStatus.isGranted) await perm.Permission.location.request();
 
     if (await perm.Permission.location.isGranted) {
-      _permissionStatus = PermissionStatus.granted;
+      // _permissionStatus = PermissionStatus.granted;
       print('permission-granted');
       // Location current = Location.instance.getLocation() as Location;
       // current.onLocationChanged.listen((LocationData currentLocation) {
@@ -383,7 +381,7 @@ class _UserHomeState extends State<UserHome> {
 
   // Google Map in the background
 
-  Widget CustomGoogleMap() {
+  Widget customGoogleMap() {
     return Container(
       color: Colors.blue[50],
       child: GoogleMap(

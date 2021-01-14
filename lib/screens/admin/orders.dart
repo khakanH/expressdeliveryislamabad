@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class Orders extends StatefulWidget {
-  final String order_status;
+  final String orderStatus;
 
-  Orders({@required this.order_status});
+  Orders({@required this.orderStatus});
 
   @override
   _OrdersState createState() => _OrdersState();
@@ -16,9 +16,10 @@ class Orders extends StatefulWidget {
 class _OrdersState extends State<Orders> {
   @override
   Widget build(BuildContext context) {
-    bool order_status = true;
-    if ('${widget.order_status}' != 'complete') order_status = false;
+    bool orderStatus = true;
+    if ('${widget.orderStatus}' != 'complete') orderStatus = false;
     return Scaffold(
+
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
@@ -44,7 +45,7 @@ class _OrdersState extends State<Orders> {
       ),
       body: StreamBuilder<List<OrderModel>>(
           stream:
-          FirestoreService().getOrders(status: '${widget.order_status}'),
+          FirestoreService().getOrders(status: '${widget.orderStatus}'),
           builder: (context,snapshot) {
             if (snapshot.hasError && !snapshot.hasData) {
               print(snapshot.error.toString());
@@ -67,7 +68,7 @@ class _OrdersState extends State<Orders> {
                   itemBuilder: (context, int) {
                     OrderModel orderModel = snapshot.data[int];
                     return ListTile(
-                      leading: order_status
+                      leading: orderStatus
                           ? Icon(
                         Icons.done,
                         color: Color(0xFFFEBC10),

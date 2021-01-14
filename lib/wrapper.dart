@@ -1,4 +1,3 @@
-import 'package:express_delivery/screens/authenticate/sigin_page.dart';
 import 'package:express_delivery/screens/get_in_page.dart';
 import 'package:express_delivery/screens/loading.dart';
 import 'package:firebase_auth/firebase_auth.dart';

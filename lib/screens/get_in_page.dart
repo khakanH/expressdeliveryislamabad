@@ -3,7 +3,6 @@ import 'package:express_delivery/screens/authenticate/sigin_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class GetInPage extends StatelessWidget {
   @override

@@ -52,30 +52,35 @@ class _LoadingState extends State<Loading> {
     print('${FirebaseAuth.instance.currentUser.phoneNumber}');
     print('${FirebaseAuth.instance.currentUser.uid}');
 
-    FirebaseFirestore.instance
-        .collection('admins')
-        .doc('${FirebaseAuth.instance.currentUser.uid}')
-        .get()
-        .then((doc) {
-      if (doc.exists) {
-        print('admin doc exits');
-        print('navigating to admin home screen');
-        print(doc.exists);
-        print(doc.data());
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-                builder: (context) => AdminHome(
-                      fullName: doc.get('fullName'),
-                    )),
-            (route) => false);
-      } else {
-        print('admin doc not exits');
-        print(doc.exists);
-        print(doc.data());
-        checkForRider();
-      }
-    });
+    try{
+      FirebaseFirestore.instance
+          .collection('admins')
+          .doc('${FirebaseAuth.instance.currentUser.uid}')
+          .get()
+          .then((doc) {
+        if (doc.exists) {
+          print('admin doc exits');
+          print('navigating to admin home screen');
+          print(doc.exists);
+          print(doc.data());
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => AdminHome(
+                    fullName: doc.get('fullName'),
+                  )),
+                  (route) => false);
+        } else {
+          print('admin doc not exits');
+          print(doc.exists);
+          print(doc.data());
+          checkForRider();
+        }
+      });
+    }catch(e){
+      // todo
+    }
+
   }
 
   void checkForRider() async {
