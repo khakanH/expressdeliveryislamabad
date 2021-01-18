@@ -13,22 +13,24 @@ class PlaceOrder extends StatefulWidget {
   final String fullName;
 
   const PlaceOrder({Key key, this.fullName}) : super(key: key);
+
   @override
   _PlaceOrderState createState() => _PlaceOrderState();
 }
 
 class _PlaceOrderState extends State<PlaceOrder> {
-
   GlobalKey<FormState> _key = new GlobalKey();
 
   TextEditingController _pickUpController = new TextEditingController();
   TextEditingController _dropController = new TextEditingController();
-  TextEditingController _deliveryChargesController = new TextEditingController();
+  TextEditingController _deliveryChargesController =
+      new TextEditingController();
   TextEditingController _descriptionController = new TextEditingController();
+
   // TextEditingController _pickUpController = new TextEditingController();
 
-  String _pickUpLocation;
-  String _dropLocation;
+  String _pickUpLocation = '';
+  String _dropLocation = '';
   int deliveryCharges;
 
   bool isDisable = false;
@@ -41,33 +43,35 @@ class _PlaceOrderState extends State<PlaceOrder> {
     print('${widget.fullName}');
     print(name);
     return InkWell(
-      onTap: isDisable ? null : () async {
-
-        if (_key.currentState.validate()) {
-          try {
-            await FirestoreService().addOrder(OrderModel(
-              customerID: '${FirebaseAuth.instance.currentUser.uid}',
-              customerFullNname: name,
-              customerPhoneNum: '${FirebaseAuth.instance.currentUser.phoneNumber}',
-              riderID: '',
-              riderFullName: '',
-              riderPhoneNum: '',
-              deliveryCharges: deliveryCharges,
-              pickUpAddress: _pickUpController.text,
-              dropAddress: _dropController.text,
-              pickUpGeoPoint: pickUpGeoPoint,
-              droppGeoPoint: dropGeoPoint,
-              description: _descriptionController.text,
-              status: 'pending',
-              timestamp: Timestamp.now().toDate(),
-              // timestamp: Timestamp.now().toDate(),
-            ));
-            Navigator.pop(context);
-          } catch (e) {
-            print(e.toString());
-          }
-        }
-      },
+      onTap: isDisable
+          ? null
+          : () async {
+              if (_key.currentState.validate()) {
+                try {
+                  await FirestoreService().addOrder(OrderModel(
+                    customerID: '${FirebaseAuth.instance.currentUser.uid}',
+                    customerFullNname: name,
+                    customerPhoneNum:
+                        '${FirebaseAuth.instance.currentUser.phoneNumber}',
+                    riderID: '',
+                    riderFullName: '',
+                    riderPhoneNum: '',
+                    deliveryCharges: deliveryCharges,
+                    pickUpAddress: _pickUpController.text,
+                    dropAddress: _dropController.text,
+                    pickUpGeoPoint: pickUpGeoPoint,
+                    droppGeoPoint: dropGeoPoint,
+                    description: _descriptionController.text,
+                    status: 'pending',
+                    timestamp: Timestamp.now().toDate(),
+                    // timestamp: Timestamp.now().toDate(),
+                  ));
+                  Navigator.pop(context);
+                } catch (e) {
+                  print(e.toString());
+                }
+              }
+            },
       child: Container(
         width: MediaQuery.of(context).size.width * .9,
         padding: EdgeInsets.symmetric(vertical: 10),
@@ -77,9 +81,11 @@ class _PlaceOrderState extends State<PlaceOrder> {
             gradient: LinearGradient(
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
-                colors: isDisable ? [Colors.white, Colors.white] : [Color(0xFFFEBC10), Color(0xFFFEBC10)])),
+                colors: isDisable
+                    ? [Colors.white, Colors.white]
+                    : [Color(0xFFFEBC10), Color(0xFFFEBC10)])),
         child: Text(
-          'ORDER',
+          'CONFIRM',
           style: TextStyle(fontSize: 24, color: Colors.white),
         ),
       ),
@@ -117,8 +123,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   @override
   Widget build(BuildContext context) {
-
-   // _checkIfAnyActiveOrder(context);
+    // _checkIfAnyActiveOrder(context);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -154,8 +159,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
           child: Form(
             key: _key,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 Text(
                   isDisable ? 'Already an order is in queue' : '',
                   style: TextStyle(
@@ -164,71 +169,105 @@ class _PlaceOrderState extends State<PlaceOrder> {
                 ),
 
 
-                ListTile(
-                  title: Text('Select Pickup Location'),
-                  trailing: IconButton(
-                    icon: Icon(Icons.add,
-                    color: isDisable ? Colors.white : Color(0xFF29146F),),
-                    onPressed: isDisable ? null : () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PlacePicker(
-                            apiKey: 'AIzaSyCN-2fyocInwIfJ5EZhLgiWpA9cOY2sWV8',   // Put YOUR OWN KEY here.
-                            onPlacePicked: (result) {
-                              print('place picker');
-                              print(result.formattedAddress);
-                              print(result.geometry.location);
-                              // print(result.addressComponents[3].longName); // job done, welldone
-
-                              Navigator.of(context).pop();
-                              setState(() {
-                                String locality = result.addressComponents[3].longName;
-                                // String locality = '' ;
-                                // List<AddressComponent> pickAdd = result.addressComponents;
-                                // if (pickAdd.contains('Islamabad')){
-                                //   locality = 'Islamabad';
-                                // }
-                                // if (pickAdd.contains('Rawalpindi')){
-                                //   locality = 'Rawalpindi';
-                                // }
-                                _pickUpController.text = result.formattedAddress;
-                                _pickUpLocation = locality;
-                                Location pickUpLocation = result.geometry.location;
-                                pickUpGeoPoint = new GeoPoint(pickUpLocation.lat, pickUpLocation.lng);
-                                print(pickUpGeoPoint.latitude);
-                                print(pickUpGeoPoint.latitude);
-
-                                // print(pickAdd.contains('-------------------------'));
-                                // print(pickAdd.contains('Rawalpindi'));
-                                // print(pickAdd.contains('Islamabad'));
-                                // print(pickAdd.contains('-------------------------'));
-
-                                if  ((_dropLocation != null && _dropLocation.contains('Rawalpindi')) || _pickUpLocation.contains('Rawalpindi')){
-                                  _deliveryChargesController.text = '300 PKR';
-                                  deliveryCharges = 300;
-                                }if (_pickUpLocation.contains('Islamabad')){
-                                  _deliveryChargesController.text = '200 PKR';
-                                  deliveryCharges = 200;
-                                }
-                              });
-                            },
-                            usePinPointingSearch: true,
-                            desiredLocationAccuracy: LocationAccuracy.high,
-                            initialPosition: LatLng(37.42796133580664, -122.085749655962),
-                            useCurrentLocation: true,
-                          ),
-                        ),
-                      );
-                    },
+                Text(
+                  'SELECT PICK UP LOCATION',
+                  style: TextStyle(
+                    color: Color(0xFF29146F),
+                    fontWeight: FontWeight.bold,
                   ),
+                ),
+                SizedBox(
+                  height: 5,
                 ),
                 TextFormField(
                   controller: _pickUpController,
-                  maxLines: 3,
-                  enabled: false,
+                  onTap: isDisable
+                      ? null
+                      : () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PlacePicker(
+                          apiKey:
+                          'AIzaSyCN-2fyocInwIfJ5EZhLgiWpA9cOY2sWV8',
+                          // Put YOUR OWN KEY here.
+                          onPlacePicked: (result) {
+                            print('place picker');
+                            print(result.formattedAddress);
+                            print(result.geometry.location);
+                            // print(result.addressComponents[3].longName); // job done, welldone
+
+                            Navigator.of(context).pop();
+                            setState(() {
+                              _dropLocation = _dropLocation;
+                              String locality =
+                                  result.addressComponents[3].longName;
+                              // String locality = '' ;
+                              // List<AddressComponent> pickAdd = result.addressComponents;
+                              // if (pickAdd.contains('Islamabad')){
+                              //   locality = 'Islamabad';
+                              // }
+                              // if (pickAdd.contains('Rawalpindi')){
+                              //   locality = 'Rawalpindi';
+                              // }
+                              _pickUpController.text =
+                                  result.formattedAddress;
+                              _pickUpLocation = locality;
+                              Location pickUpLocation =
+                                  result.geometry.location;
+                              pickUpGeoPoint = new GeoPoint(
+                                  pickUpLocation.lat,
+                                  pickUpLocation.lng);
+                              print(pickUpGeoPoint.latitude);
+                              print(pickUpGeoPoint.latitude);
+
+                              // print(pickAdd.contains('-------------------------'));
+                              // print(pickAdd.contains('Rawalpindi'));
+                              // print(pickAdd.contains('Islamabad'));
+                              // print(pickAdd.contains('-------------------------'));
+
+                              if ((_dropLocation != null &&
+                                  _dropLocation
+                                      .contains('Rawalpindi')) ||
+                                  _pickUpLocation
+                                      .contains('Rawalpindi')) {
+                                _deliveryChargesController.text =
+                                '300 PKR';
+                                deliveryCharges = 300;
+                              }
+                              else if (_pickUpLocation
+                                  .contains('Islamabad')) {
+                                _deliveryChargesController.text =
+                                '200 PKR';
+                                deliveryCharges = 200;
+                              }
+                            });
+                          },
+                          usePinPointingSearch: true,
+                          desiredLocationAccuracy:
+                          LocationAccuracy.high,
+                          initialPosition: LatLng(
+                              37.42796133580664, -122.085749655962),
+                          useCurrentLocation: true,
+                        ),
+                      ),
+                    );
+                  },
                   decoration: InputDecoration(
-                    labelText: 'Pickup Address',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(90.0)),
+                      borderSide: BorderSide.none,
+                    ),
+                    fillColor: Color(0xFFEAEAEC),
+                    filled: true,
+                    hintText: "Satellite Town...",
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        Icons.location_on,
+                        color: isDisable ? Colors.white : Color(0xFF737373),
+                      ),
+                      onPressed: null
+                    ),
                     hintMaxLines: 3,
                   ),
                   keyboardType: TextInputType.streetAddress,
@@ -244,63 +283,160 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
 
 
+                SizedBox(
+                  height: 30,
+                ),
 
 
-                SizedBox(height: 10,),
-
-
-
-                ListTile(
-                  title: Text('Select Drop Location'),
-                  trailing: IconButton(
-                    icon: Icon(Icons.add,
-                      color: isDisable ? Colors.white : Color(0xFFFEBC10),),
-                    onPressed: isDisable ? null : () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PlacePicker(
-                            apiKey: 'AIzaSyCN-2fyocInwIfJ5EZhLgiWpA9cOY2sWV8',   // Put YOUR OWN KEY here.
-                            onPlacePicked: (result) {
-                             Navigator.of(context).pop();
-                              setState(() {
-
-                                _dropController.text = result.formattedAddress;
-                                print(result.addressComponents[3].longName); // job done, welldone
-                                // print(result.addressComponents[3].longName);
-                                String locality = result.addressComponents[4].longName;
-                                print('checking the locality.contains(Islamabad)');
-                                print(locality.contains('Islamabad'));
-                                _dropLocation = locality;
-                                Location dropLocation = result.geometry.location;
-                                dropGeoPoint = new GeoPoint(dropLocation.lat, dropLocation.lng);
-
-                                if  (_dropLocation.contains('Rawalpindi') || (_pickUpLocation != null && _pickUpLocation.contains('Rawalpindi'))){
-                                  _deliveryChargesController.text = '300 PKR';
-                                  deliveryCharges = 300;
-                                }if (_pickUpLocation.contains('Islamabad')){
-                                  _deliveryChargesController.text = '200 PKR';
-                                  deliveryCharges = 200;
-                                }
-
-                              });
-                            },
-                            usePinPointingSearch: true,
-                            desiredLocationAccuracy: LocationAccuracy.high,
-                            initialPosition: LatLng(37.42796133580664, -122.085749655962),
-                            useCurrentLocation: true,
-                          ),
-                        ),
-                      );
-                    },
+                // ListTile(
+                //   title: Text('Select Drop Location'),
+                //   trailing: IconButton(
+                //     icon: Icon(
+                //       Icons.location_on,
+                //       color: isDisable ? Colors.white : Color(0xFFFEBC10),
+                //     ),
+                //     onPressed: isDisable
+                //         ? null
+                //         : () {
+                //             Navigator.push(
+                //               context,
+                //               MaterialPageRoute(
+                //                 builder: (context) => PlacePicker(
+                //                   apiKey:
+                //                       'AIzaSyCN-2fyocInwIfJ5EZhLgiWpA9cOY2sWV8',
+                //                   // Put YOUR OWN KEY here.
+                //                   onPlacePicked: (result) {
+                //                     Navigator.of(context).pop();
+                //                     setState(() {
+                //                       _dropController.text =
+                //                           result.formattedAddress;
+                //                       print(result.addressComponents[3]
+                //                           .longName); // job done, welldone
+                //                       // print(result.addressComponents[3].longName);
+                //                       String locality =
+                //                           result.addressComponents[4].longName;
+                //                       print(
+                //                           'checking the locality.contains(Islamabad)');
+                //                       print(locality.contains('Islamabad'));
+                //                       _dropLocation = locality;
+                //                       Location dropLocation =
+                //                           result.geometry.location;
+                //                       dropGeoPoint = new GeoPoint(
+                //                           dropLocation.lat, dropLocation.lng);
+                //
+                //                       if (_dropLocation
+                //                               .contains('Rawalpindi') ||
+                //                           (_pickUpLocation != null &&
+                //                               _pickUpLocation
+                //                                   .contains('Rawalpindi'))) {
+                //                         _deliveryChargesController.text =
+                //                             '300 PKR';
+                //                         deliveryCharges = 300;
+                //                       }
+                //                       if (_pickUpLocation
+                //                           .contains('Islamabad')) {
+                //                         _deliveryChargesController.text =
+                //                             '200 PKR';
+                //                         deliveryCharges = 200;
+                //                       }
+                //                     });
+                //                   },
+                //                   usePinPointingSearch: true,
+                //                   desiredLocationAccuracy:
+                //                       LocationAccuracy.high,
+                //                   initialPosition: LatLng(
+                //                       37.42796133580664, -122.085749655962),
+                //                   useCurrentLocation: true,
+                //                 ),
+                //               ),
+                //             );
+                //           },
+                //   ),
+                // ),
+                Text(
+                  'SELECT DROPOFF LOCATION',
+                  style: TextStyle(
+                    color: Color(0xFF29146F),
+                    fontWeight: FontWeight.bold,
                   ),
+                ),
+                SizedBox(
+                  height: 5,
                 ),
                 TextFormField(
                   controller: _dropController,
-                  maxLines: 3,
-                  enabled: false,
+                  onTap: isDisable
+                      ? null
+                      : () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PlacePicker(
+                          apiKey:
+                          'AIzaSyCN-2fyocInwIfJ5EZhLgiWpA9cOY2sWV8',
+                          // Put YOUR OWN KEY here.
+                          onPlacePicked: (result) {
+                            Navigator.of(context).pop();
+                            setState(() {
+                              _pickUpLocation = _pickUpLocation;
+                              _dropController.text =
+                                  result.formattedAddress;
+                              print(result.addressComponents[3]
+                                  .longName); // job done, welldone
+                              // print(result.addressComponents[3].longName);
+                              String locality = result
+                                  .addressComponents[4].longName;
+                              print(
+                                  'checking the locality.contains(Islamabad)');
+                              print(locality.contains('Islamabad'));
+                              _dropLocation = locality;
+                              Location dropLocation =
+                                  result.geometry.location;
+                              dropGeoPoint = new GeoPoint(
+                                  dropLocation.lat, dropLocation.lng);
+
+                              if (_dropLocation
+                                  .contains('Rawalpindi') ||
+                                  (_pickUpLocation != null &&
+                                      _pickUpLocation
+                                          .contains('Rawalpindi'))) {
+                                _deliveryChargesController.text =
+                                '300 PKR';
+                                deliveryCharges = 300;
+                              }
+                              else if (_dropLocation
+                                  .contains('Islamabad')) {
+                                _deliveryChargesController.text =
+                                '200 PKR';
+                                deliveryCharges = 200;
+                              }
+                            });
+                          },
+                          usePinPointingSearch: true,
+                          desiredLocationAccuracy:
+                          LocationAccuracy.high,
+                          initialPosition: LatLng(
+                              37.42796133580664, -122.085749655962),
+                          useCurrentLocation: true,
+                        ),
+                      ),
+                    );
+                  },
                   decoration: InputDecoration(
-                    labelText: 'Drop Address',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(90.0)),
+                      borderSide: BorderSide.none,
+                    ),
+                    fillColor: Color(0xFFEAEAEC),
+                    filled: true,
+                    hintText: "Satellite Town...",
+                    suffixIcon: IconButton(
+                        icon: Icon(
+                          Icons.location_on,
+                          color: isDisable ? Colors.white : Color(0xFF737373),
+                        ),
+                        onPressed: null
+                    ),
                     hintMaxLines: 3,
                   ),
                   keyboardType: TextInputType.streetAddress,
@@ -314,44 +450,110 @@ class _PlaceOrderState extends State<PlaceOrder> {
                   },
                 ),
 
-
-
-
-
-                TextFormField(
-                  controller: _deliveryChargesController,
-                  enabled: false,
-                  decoration: InputDecoration(
-                    labelText: 'Delivery Charges',
+                SizedBox(
+                  height: 30,
+                ),
+                Text(
+                  'ENTER ORDER DESCRIPTION',
+                  style: TextStyle(
+                    color: Color(0xFF29146F),
+                    fontWeight: FontWeight.bold,
                   ),
-                  keyboardType: TextInputType.name,
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                TextFormField(
+                  controller: _descriptionController,
+                  enabled: isDisable ? false : true,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(90.0)),
+                      borderSide: BorderSide.none,
+                    ),
+                    fillColor: Color(0xFFEAEAEC),
+                    filled: true,
+                    hintText: "List of Items...",
+                    hintMaxLines: 3,
+                  ),
+                  keyboardType: TextInputType.streetAddress,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (String arg) {
                     if (arg.isEmpty)
-                      return 'Delivery Charges';
+                      return 'Please fill the order description';
                     else {
                       return null;
                     }
                   },
                 ),
-                TextFormField(
-                  controller: _descriptionController,
-                  maxLines: 5,
-                  enabled: isDisable ? false : true,
-                  decoration: InputDecoration(
-                    labelText: 'Order Description',
-                    hintMaxLines: 5,
-                  ),
-                  keyboardType: TextInputType.streetAddress,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (String arg) {
-                  if (arg.isEmpty)
-                    return 'Please fill the order description';
-                  else {
-                    return null;
-                  }
-                },
+
+
+                SizedBox(
+                  height: 30,
                 ),
-                SizedBox(height: 20,),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+
+                    Text(
+                      'Delivery Charges',
+                      style: TextStyle(
+                        color: Color(0xFF29146F),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 30,
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * .3,
+                      child: TextFormField(
+                        controller: _deliveryChargesController,
+                        decoration: InputDecoration(
+                          disabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          focusedErrorBorder: InputBorder.none,
+                        ),
+                        keyboardType: TextInputType.name,
+                        validator: (String arg) {
+                          if (arg.isEmpty)
+                            return 'Delivery Charges';
+                          else {
+                            return null;
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                // TextFormField(
+                //   controller: _deliveryChargesController,
+                //   enabled: false,
+                //   decoration: InputDecoration(
+                //     labelText: 'Delivery Charges',
+                //   ),
+                //   keyboardType: TextInputType.name,
+                //   validator: (String arg) {
+                //     if (arg.isEmpty)
+                //       return 'Delivery Charges';
+                //     else {
+                //       return null;
+                //     }
+                //   },
+                // ),
+
+
+
+
+
+
+                SizedBox(
+                  height: 40,
+                ),
                 _submitButton(),
               ],
             ),
@@ -361,32 +563,31 @@ class _PlaceOrderState extends State<PlaceOrder> {
     );
   }
 
-
-  // Future<void> _showMyDialog() {
-  //   return showDialog<void>(
-  //     context: context,
-  //     barrierDismissible: false, // user must tap button!
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: Text('Oops!'),
-  //         content: SingleChildScrollView(
-  //           child: ListBody(
-  //             children: <Widget>[
-  //               Text('Express Delivery Services are available for Islamabad and Rawalpindi.'),
-  //               // Text('Make sure?'),
-  //             ],
-  //           ),
-  //         ),
-  //         actions: <Widget>[
-  //           TextButton(
-  //             child: Text('OK'),
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
+// Future<void> _showMyDialog() {
+//   return showDialog<void>(
+//     context: context,
+//     barrierDismissible: false, // user must tap button!
+//     builder: (BuildContext context) {
+//       return AlertDialog(
+//         title: Text('Oops!'),
+//         content: SingleChildScrollView(
+//           child: ListBody(
+//             children: <Widget>[
+//               Text('Express Delivery Services are available for Islamabad and Rawalpindi.'),
+//               // Text('Make sure?'),
+//             ],
+//           ),
+//         ),
+//         actions: <Widget>[
+//           TextButton(
+//             child: Text('OK'),
+//             onPressed: () {
+//               Navigator.of(context).pop();
+//             },
+//           ),
+//         ],
+//       );
+//     },
+//   );
+// }
 }

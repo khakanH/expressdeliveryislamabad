@@ -1,5 +1,6 @@
 import 'package:express_delivery/wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -21,6 +22,7 @@ void main() async {
 //       macOS: initializationSettingsMacOS);
 //   await flutterLocalNotificationsPlugin.initialize(initializationSettings,
 //       onSelectNotification: selectNotification);
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   runApp(MyApp());
 }
 

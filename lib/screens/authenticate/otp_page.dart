@@ -100,6 +100,8 @@ class _OtpPageState extends State<OtpPage> {
                 fieldsCount: 6,
                 onSubmit: (pin) async {
                   try {
+                    // todo reCaptcha disabled... test it
+                    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
                     await FirebaseAuth.instance
                         .signInWithCredential(PhoneAuthProvider.credential(
                             verificationId: _verificationCode, smsCode: pin))
@@ -138,6 +140,7 @@ class _OtpPageState extends State<OtpPage> {
   }
 
   _verifyPhone() async {
+    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
     await FirebaseAuth.instance.verifyPhoneNumber(
       phoneNumber: '+92${widget.phone}',
       verificationCompleted: (PhoneAuthCredential credential) async {
